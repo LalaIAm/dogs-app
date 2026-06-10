@@ -46,7 +46,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Apply `data-speed` attribute for parallax
     - _Requirements: 15.2_
 
-  - [~] 2.4 Create NoteCard component
+  - [x] 2.4 Create NoteCard component
     - Accept props: children, rotation, speed, cta (optional)
     - Sand background, thumbtack circle, quote text, optional CTA button
     - Apply `data-speed` attribute for parallax
