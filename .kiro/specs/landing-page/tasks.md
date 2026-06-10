@@ -29,46 +29,46 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - _Requirements: 1.1_
 
 - [ ] 2. Implement reusable UI components
-  - [ ] 2.1 Create NoiseOverlay component
+  - [x] 2.1 Create NoiseOverlay component
     - Fixed full-viewport div with noise SVG background, 8% opacity, pointer-events-none, z-9999
     - _Requirements: 2.3, 15_
 
-  - [ ] 2.2 Create Polaroid component
+  - [~] 2.2 Create Polaroid component
     - Accept props: src, caption, rotation, tapePosition, className, speed
     - Render white-bordered frame with tape decoration, image with film-look filter, handwritten caption
     - Apply `data-speed` attribute for parallax
     - Image transitions from grayscale/sepia to full color on hover (500ms)
     - _Requirements: 15.1, 4.7_
 
-  - [ ] 2.3 Create PostItNote component
+  - [~] 2.3 Create PostItNote component
     - Accept props: children, rotation, speed
     - Yellow (#fff9c4) background, pin circle decoration, handwritten content
     - Apply `data-speed` attribute for parallax
     - _Requirements: 15.2_
 
-  - [ ] 2.4 Create NoteCard component
+  - [~] 2.4 Create NoteCard component
     - Accept props: children, rotation, speed, cta (optional)
     - Sand background, thumbtack circle, quote text, optional CTA button
     - Apply `data-speed` attribute for parallax
     - _Requirements: 15.3_
 
-  - [ ] 2.5 Create ReviewCard component
+  - [~] 2.5 Create ReviewCard component
     - Accept props: variant ('receipt' | 'napkin' | 'polaroid'), quote, author, meta, image, speed
     - Implement three visual variants: receipt (dotted border, thumbtack hole), napkin (tape, handwritten), polaroid (photo frame, sepia)
     - Hover rotation reset to 0deg with transition
     - _Requirements: 15.4, 8.4_
 
-  - [ ] 2.6 Create FeatureCard component
+  - [~] 2.6 Create FeatureCard component
     - Accept props: icon, title, description, tag, shadowColor, children
     - Render offset shadow/border layer that reduces offset on hover (4px → 2px transition)
     - _Requirements: 15.5, 9.3_
 
-  - [ ] 2.7 Create TechFeature component
+  - [~] 2.7 Create TechFeature component
     - Accept props: icon, title, description, iconColor
     - Left border separator, Phosphor icon with scale-110 on hover, mono title, description
     - _Requirements: 15.6, 10.3_
 
-  - [ ] 2.8 Create BlogCard component
+  - [~] 2.8 Create BlogCard component
     - Accept props: variant ('image' | 'quote' | 'guide'), title, image, date, excerpt, items
     - Implement three variants: image (photo + title + date), quote (rust bg, large text), guide (sage tint, bullet list)
     - Tape decoration, rotation, hover-to-level transition
