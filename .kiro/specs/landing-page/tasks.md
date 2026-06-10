@@ -28,7 +28,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Create `src/data/landingContent.js` with all static content arrays: manifestoItems, reviews, techFeatures, blogPosts, brands, features
     - _Requirements: 1.1_
 
-- [ ] 2. Implement reusable UI components
+- [x] 2. Implement reusable UI components
   - [x] 2.1 Create NoiseOverlay component
     - Fixed full-viewport div with noise SVG background, 8% opacity, pointer-events-none, z-9999
     - _Requirements: 2.3, 15_
@@ -52,7 +52,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Apply `data-speed` attribute for parallax
     - _Requirements: 15.3_
 
-  - [~] 2.5 Create ReviewCard component
+  - [x] 2.5 Create ReviewCard component
     - Accept props: variant ('receipt' | 'napkin' | 'polaroid'), quote, author, meta, image, speed
     - Implement three visual variants: receipt (dotted border, thumbtack hole), napkin (tape, handwritten), polaroid (photo frame, sepia)
     - Hover rotation reset to 0deg with transition
