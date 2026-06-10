@@ -68,7 +68,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Left border separator, Phosphor icon with scale-110 on hover, mono title, description
     - _Requirements: 15.6, 10.3_
 
-  - [ ] 2.8 Create BlogCard component
+  - [x] 2.8 Create BlogCard component
     - Accept props: variant ('image' | 'quote' | 'guide'), title, image, date, excerpt, items
     - Implement three variants: image (photo + title + date), quote (rust bg, large text), guide (sage tint, bullet list)
     - Tape decoration, rotation, hover-to-level transition
