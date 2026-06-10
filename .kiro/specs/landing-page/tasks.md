@@ -40,7 +40,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Image transitions from grayscale/sepia to full color on hover (500ms)
     - _Requirements: 15.1, 4.7_
 
-  - [~] 2.3 Create PostItNote component
+  - [x] 2.3 Create PostItNote component
     - Accept props: children, rotation, speed
     - Yellow (#fff9c4) background, pin circle decoration, handwritten content
     - Apply `data-speed` attribute for parallax
