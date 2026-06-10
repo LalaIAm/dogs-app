@@ -58,17 +58,17 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Hover rotation reset to 0deg with transition
     - _Requirements: 15.4, 8.4_
 
-  - [~] 2.6 Create FeatureCard component
+  - [x] 2.6 Create FeatureCard component
     - Accept props: icon, title, description, tag, shadowColor, children
     - Render offset shadow/border layer that reduces offset on hover (4px → 2px transition)
     - _Requirements: 15.5, 9.3_
 
-  - [~] 2.7 Create TechFeature component
+  - [ ] 2.7 Create TechFeature component
     - Accept props: icon, title, description, iconColor
     - Left border separator, Phosphor icon with scale-110 on hover, mono title, description
     - _Requirements: 15.6, 10.3_
 
-  - [~] 2.8 Create BlogCard component
+  - [ ] 2.8 Create BlogCard component
     - Accept props: variant ('image' | 'quote' | 'guide'), title, image, date, excerpt, items
     - Implement three variants: image (photo + title + date), quote (rust bg, large text), guide (sage tint, bullet list)
     - Tape decoration, rotation, hover-to-level transition
