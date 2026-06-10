@@ -33,7 +33,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Fixed full-viewport div with noise SVG background, 8% opacity, pointer-events-none, z-9999
     - _Requirements: 2.3, 15_
 
-  - [~] 2.2 Create Polaroid component
+  - [x] 2.2 Create Polaroid component
     - Accept props: src, caption, rotation, tapePosition, className, speed
     - Render white-bordered frame with tape decoration, image with film-look filter, handwritten caption
     - Apply `data-speed` attribute for parallax
