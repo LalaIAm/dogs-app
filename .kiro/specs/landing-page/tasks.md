@@ -63,7 +63,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Render offset shadow/border layer that reduces offset on hover (4px → 2px transition)
     - _Requirements: 15.5, 9.3_
 
-  - [ ] 2.7 Create TechFeature component
+  - [x] 2.7 Create TechFeature component
     - Accept props: icon, title, description, iconColor
     - Left border separator, Phosphor icon with scale-110 on hover, mono title, description
     - _Requirements: 15.6, 10.3_
