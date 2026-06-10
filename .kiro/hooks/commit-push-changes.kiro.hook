@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Commit & Push on Change",
+  "description": "After the agent finishes working, automatically commit all changes with a descriptive commit message based on what was changed, then push to the current branch.",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the current git diff to understand what changed. Stage all modified and new files, create a concise and descriptive commit message summarizing the changes (use conventional commit format like feat:, fix:, chore:, etc.), commit, and push to the current branch. Do not force push. If there are no changes to commit, do nothing."
+  }
+}
