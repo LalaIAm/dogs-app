@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadDoggs | Find Lodging</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#EAE7DC',
+                        ink: '#232323',
+                        rust: '#C8553D',
+                        sage: '#8E9C6D',
+                        sand: '#D8C3A5',
+                        alert: '#BC4B51',
+                        night: '#1a1d23',
+                    },
+                    fontFamily: {
+                        serif: ['Fraunces', 'serif'],
+                        mono: ['Space Mono', 'monospace'],
+                        hand: ['Reenie Beanie', 'cursive'],
+                    },
+                    backgroundImage: {
+                        'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
+                        'paper-texture': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                    },
+                    boxShadow: {
+                        'rough': '4px 4px 0px 0px #232323',
+                        'rough-sm': '2px 2px 0px 0px #232323',
+                        'paper-floating': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0,0,0,0.1)',
+                    },
+                    rotate: {
+                        'neg-1': '-1deg',
+                        '1': '1deg',
+                        '2': '2deg',
+                        'neg-2': '-2deg',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Global Texture */
+        body {
+            background-color: #EAE7DC;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            overflow: hidden;
+        }
+        
+        .noise-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Map Filters for "Printed" Look */
+        .map-canvas {
+            filter: contrast(1.1) sepia(0.2) saturate(0.9);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #232323; border-radius: 4px; }
+
+        /* Tape Effect */
+        .tape {
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            backdrop-filter: blur(1px);
+            transform: rotate(-2deg);
+            position: absolute;
+            z-index: 20;
+        }
+
+        /* Paper Clip (CSS Only roughly) */
+        .paper-clip {
+            width: 8px;
+            height: 24px;
+            border: 2px solid #555;
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            z-index: 50;
+        }
+
+        /* Luggage Tag Hole */
+        .tag-hole {
+            width: 12px;
+            height: 12px;
+            background: #232323;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 8px;
+            transform: translateY(-50%);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="text-ink antialiased h-screen flex flex-col">
+    <div class="noise-layer"></div>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="h-16 bg-[#EAE7DC] border-b border-ink/10 flex items-center justify-between px-4 z-40 relative shadow-sm shrink-0">
+        <div class="flex items-center gap-4">
+             <a href="#" class="flex items-center gap-2 group" rel="nofollow">
+                <div class="w-8 h-8 bg-ink text-paper rounded-full flex items-center justify-center border border-ink">
+                    <i class="ph-fill ph-bed"></i>
+                </div>
+                <!-- Breadcrumbs -->
+                <div class="flex flex-col justify-center">
+                    <div class="flex items-center text-xs font-mono font-bold uppercase gap-2 text-gray-400">
+                        <span>Day 2</span>
+                        <i class="ph-bold ph-arrow-right text-[10px]"></i>
+                        <span>Day 3</span>
+                    </div>
+                    <span class="text-ink font-serif font-bold leading-none">Moab, UT <span class="text-gray-400 font-normal text-sm font-sans mx-1">/</span> Oct 12 - 13</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-3">
+             <!-- Shortlist Toggle (Mobile/Mini) -->
+             <button class="flex items-center gap-2 px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 border border-yellow-300 rounded-sm transition-colors text-xs font-mono uppercase font-bold text-yellow-900 shadow-sm">
+                <i class="ph-bold ph-paperclip"></i>
+                <span class="hidden sm:inline">Shortlist (2)</span>
+            </button>
+            <div class="h-6 w-px bg-gray-300 mx-2"></div>
+            <button class="w-8 h-8 bg-ink text-paper rounded-full flex items-center justify-center hover:bg-rust transition-colors">
+                <i class="ph-bold ph-x"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= MAIN WORKSPACE ================= -->
+    <div class="flex-grow flex overflow-hidden relative">
+        
+        <!-- === SIDEBAR: FILTERS & LODGING LIST === -->
+        <aside class="w-[450px] bg-[#fcfcf9] border-r border-ink/10 flex flex-col z-30 shadow-xl relative shrink-0">
+            
+            <!-- Context & Filters -->
+            <div class="p-5 border-b border-ink/5 bg-[#EAE7DC] relative">
+                <!-- Decorative Torn Edge Bottom (Visual only via CSS border or clip path normally, keeping simple here) -->
+                
+                <h1 class="font-serif font-black text-2xl mb-3">Rest Your Head</h1>
+                
+                <!-- Date/Guest Inline Editor -->
+                <div class="flex gap-2 mb-4">
+                    <div class="flex-1 bg-white border border-gray-300 rounded-sm px-2 py-1.5 flex items-center gap-2 cursor-pointer hover:border-ink">
+                        <i class="ph-bold ph-calendar-blank text-gray-400"></i>
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-mono text-gray-500 uppercase leading-none">Check-in</span>
+                            <span class="text-xs font-bold font-mono">Oct 12</span>
+                        </div>
+                    </div>
+                    <div class="w-16 bg-white border border-gray-300 rounded-sm px-2 py-1.5 flex flex-col justify-center items-center cursor-pointer hover:border-ink">
+                         <span class="text-[9px] font-mono text-gray-500 uppercase leading-none">Guests</span>
+                         <span class="text-xs font-bold font-mono">2 Ad, 1 Dg</span>
+                    </div>
+                </div>
+
+                <!-- Type Filters -->
+                <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    <button class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-ink text-paper rounded-full text-[10px] font-mono font-bold shadow-rough-sm hover:translate-y-[1px] hover:shadow-none transition-all border border-ink">
+                        All Types
+                    </button>
+                    <button class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white text-ink rounded-full text-[10px] font-mono font-bold border border-gray-300 hover:border-ink hover:bg-gray-50 transition-all">
+                        <i class="ph-bold ph-house-line"></i> Hotels
+                    </button>
+                    <button class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white text-ink rounded-full text-[10px] font-mono font-bold border border-gray-300 hover:border-ink hover:bg-gray-50 transition-all">
+                        <i class="ph-bold ph-tent"></i> Camp
+                    </button>
+                    <button class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white text-ink rounded-full text-[10px] font-mono font-bold border border-gray-300 hover:border-ink hover:bg-gray-50 transition-all">
+                        <i class="ph-bold ph-paw-print"></i> Pet Friendly
+                    </button>
+                </div>
+            </div>
+
+            <!-- List Results -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-[#fcfcf9]">
+                
+                <!-- Result 1: Glamping (Selected) -->
+                <div class="group relative">
+                    <!-- Paper Stack Effect -->
+                    <div class="absolute inset-0 bg-white border border-gray-200 rounded-sm rotate-1 translate-y-1 z-0"></div>
+                    
+                    <div class="bg-white border-2 border-rust shadow-rough p-0 rounded-sm relative z-10 cursor-pointer overflow-hidden">
+                        <div class="flex h-32">
+                           <!-- Image -->
+                           <div class="w-32 h-full relative">
+                               <img src="https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                               <div class="absolute top-2 left-2 bg-white/90 px-1.5 py-0.5 text-[9px] font-mono uppercase font-bold text-ink rounded-sm backdrop-blur">
+                                   Glamping
+                               </div>
+                           </div>
+                           <!-- Content -->
+                           <div class="flex-1 p-3 flex flex-col justify-between">
+                               <div>
+                                   <div class="flex justify-between items-start">
+                                       <h3 class="font-serif font-bold text-lg leading-tight text-ink group-hover:underline decoration-rust decoration-2 underline-offset-2">Under Canvas Moab</h3>
+                                   </div>
+                                   <div class="flex items-center gap-2 mt-1">
+                                       <div class="flex text-yellow-500 text-[10px] gap-0.5"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                                       <span class="text-[10px] text-gray-400 font-mono">4.9 (820)</span>
+                                   </div>
+                               </div>
+                               
+                               <div class="flex justify-between items-end border-t border-dashed border-gray-200 pt-2 mt-1">
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] text-rust font-mono font-bold flex items-center gap-1"><i class="ph-bold ph-paw-print"></i> Dogs OK ($25)</span>
+                                        <span class="text-[10px] text-gray-500 mt-0.5">7 mi from route</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="block text-lg font-mono font-bold text-ink leading-none">$249</span>
+                                        <span class="text-[9px] text-gray-400 uppercase">/ night</span>
+                                    </div>
+                               </div>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result 2: Hotel -->
+                <div class="bg-white border border-gray-200 hover:border-ink shadow-sm hover:shadow-md rounded-sm cursor-pointer transition-all flex h-28 overflow-hidden group">
+                   <div class="w-28 relative">
+                       <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                       <div class="absolute bottom-2 left-2 bg-black/50 text-white px-1.5 py-0.5 text-[9px] font-mono rounded-sm backdrop-blur">
+                            Hotel
+                       </div>
+                   </div>
+                   <div class="flex-1 p-3 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif font-bold text-base leading-tight text-gray-800">Red Cliffs Lodge</h3>
+                            <p class="text-[10px] text-gray-500 line-clamp-1 mt-0.5">Riverfront with winery, pool, horse trails.</p>
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <div class="flex gap-2">
+                                <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-mono">Pool</span>
+                                <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px] font-mono">Wifi</span>
+                            </div>
+                             <div class="text-right">
+                                <span class="block text-base font-mono font-bold text-ink leading-none">$310</span>
+                                <span class="text-[9px] text-gray-400 uppercase">/ night</span>
+                            </div>
+                        </div>
+                   </div>
+                </div>
+
+                <!-- Result 3: Campground -->
+                <div class="bg-white border border-gray-200 hover:border-ink shadow-sm hover:shadow-md rounded-sm cursor-pointer transition-all flex h-28 overflow-hidden group relative">
+                   <!-- Shortlisted Indicator -->
+                   <div class="absolute top-0 right-3 w-1.5 h-3 bg-yellow-400 rounded-b-sm shadow-sm z-10"></div>
+                   
+                   <div class="w-28 relative bg-sage/20 flex items-center justify-center">
+                       <i class="ph-duotone ph-tent text-3xl text-sage"></i>
+                       <div class="absolute bottom-2 left-2 bg-sage/80 text-white px-1.5 py-0.5 text-[9px] font-mono rounded-sm backdrop-blur">
+                            Camp
+                       </div>
+                   </div>
+                   <div class="flex-1 p-3 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif font-bold text-base leading-tight text-gray-800">Sand Flats Rec Area</h3>
+                            <p class="text-[10px] text-alert line-clamp-1 mt-0.5 font-bold"><i class="ph-bold ph-warning"></i> First-come, first-served</p>
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-gray-500 font-mono">No Hookups</span>
+                                <span class="text-[10px] text-gray-400 font-mono">RVs &lt; 25'</span>
+                            </div>
+                             <div class="text-right">
+                                <span class="block text-base font-mono font-bold text-ink leading-none">$25</span>
+                                <span class="text-[9px] text-gray-400 uppercase">/ night</span>
+                            </div>
+                        </div>
+                   </div>
+                </div>
+
+                 <!-- Scroll space -->
+                <div class="h-20"></div>
+            </div>
+        </aside>
+
+        <!-- === MAP CANVAS === -->
+        <section class="flex-1 relative bg-[#e5e5e5] overflow-hidden">
+            <!-- Map Filters (On Map) -->
+            <div class="absolute top-4 left-4 z-10 flex gap-2">
+                <button class="px-3 py-1.5 bg-white border border-ink/20 rounded shadow-sm hover:bg-gray-50 text-xs font-mono font-bold text-ink">
+                    Near Route
+                </button>
+                <button class="px-3 py-1.5 bg-ink text-white border border-ink rounded shadow-sm hover:bg-gray-800 text-xs font-mono font-bold">
+                    Moab Area
+                </button>
+            </div>
+
+            <!-- Map Image -->
+            <img src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80" 
+                 class="w-full h-full object-cover map-canvas opacity-80 pointer-events-none">
+
+            <!-- Map Markers -->
+            <!-- Under Canvas -->
+            <div class="absolute top-[40%] left-[45%] group cursor-pointer z-20">
+                <div class="relative">
+                    <div class="w-12 h-8 bg-ink text-white flex flex-col items-center justify-center rounded shadow-lg border-2 border-white animate-float z-10 relative">
+                        <span class="font-mono font-bold text-[10px] leading-none">$249</span>
+                        <div class="w-2 h-2 bg-ink absolute -bottom-1 rotate-45 border-r-2 border-b-2 border-white"></div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Red Cliffs -->
+            <div class="absolute top-[35%] left-[55%] group cursor-pointer z-10 transition-transform hover:scale-110">
+                <div class="bg-white text-ink px-2 py-1 rounded shadow-md border border-gray-400 flex items-center gap-1">
+                     <i class="ph-fill ph-house-line text-xs"></i>
+                     <span class="font-mono font-bold text-[10px]">$310</span>
+                </div>
+            </div>
+
+            <!-- Sand Flats -->
+            <div class="absolute top-[48%] left-[48%] group cursor-pointer z-10 transition-transform hover:scale-110">
+                <div class="bg-sage text-white px-2 py-1 rounded shadow-md border border-white flex items-center gap-1">
+                     <i class="ph-fill ph-tent text-xs"></i>
+                     <span class="font-mono font-bold text-[10px]">$25</span>
+                </div>
+            </div>
+
+
+            <!-- === LODGING DETAILS SLIDE OVER === -->
+            <div class="absolute top-4 right-4 bottom-4 w-[420px] bg-[#fcfcf9] border border-ink shadow-paper-floating z-40 overflow-hidden flex flex-col relative">
+                
+                <!-- Close & Controls -->
+                <div class="absolute top-4 right-4 z-50 flex gap-2">
+                     <button class="w-8 h-8 bg-white/40 backdrop-blur rounded-full flex items-center justify-center hover:bg-white hover:text-ink transition-colors border border-white/50 text-white">
+                        <i class="ph-bold ph-heart"></i>
+                    </button>
+                    <button class="w-8 h-8 bg-white/40 backdrop-blur rounded-full flex items-center justify-center hover:bg-ink hover:text-white transition-colors border border-white/50 text-white">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+
+                <!-- Hero Section -->
+                <div class="h-64 relative shrink-0">
+                    <img src="https://images.unsplash.com/photo-1496417263034-38ec6909b278?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                    
+                    <div class="absolute bottom-4 left-5 right-5 text-white">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="bg-rust/90 backdrop-blur text-white px-1.5 py-0.5 text-[9px] font-mono uppercase font-bold rounded-sm">Glamping</span>
+                            <div class="flex text-yellow-400 text-[10px]"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i></div>
+                        </div>
+                        <h2 class="font-serif font-black text-3xl leading-none shadow-black drop-shadow-lg">Under Canvas Moab</h2>
+                        <p class="font-mono text-xs opacity-80 mt-1 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> 15 mins North of Moab</p>
+                    </div>
+                </div>
+
+                <!-- Content Scroll -->
+                <div class="flex-1 overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+                    
+                    <!-- Trip Context Bar -->
+                    <div class="bg-ink text-paper px-5 py-3 flex items-center justify-between">
+                         <div class="flex flex-col">
+                             <span class="text-[9px] uppercase font-mono text-gray-400">Your Stay</span>
+                             <span class="text-sm font-bold font-serif">Oct 12 - Oct 13 <span class="text-gray-500 font-sans font-normal">(1 Night)</span></span>
+                         </div>
+                         <div class="text-right">
+                             <span class="block text-xl font-mono font-bold leading-none">$249</span>
+                             <span class="text-[9px] text-gray-400 uppercase">Total est.</span>
+                         </div>
+                    </div>
+
+                    <div class="p-5">
+                        
+                        <!-- Description -->
+                        <p class="font-serif text-sm text-gray-800 leading-relaxed mb-6">
+                            Luxury camping tents with kingsize beds, wood-burning stoves, and ensuite bathrooms. Experience the desert night sky without sacrificing comfort.
+                        </p>
+
+                        <!-- Key Features Grid -->
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <div class="flex items-start gap-2 p-2 bg-white/50 border border-ink/5 rounded-sm">
+                                <i class="ph-fill ph-dog text-rust text-lg mt-0.5"></i>
+                                <div>
+                                    <span class="block text-xs font-bold font-serif text-ink">Pet Friendly</span>
+                                    <span class="block text-[10px] text-gray-500 leading-tight">Dogs allowed in tent. $25 fee applies per stay.</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 p-2 bg-white/50 border border-ink/5 rounded-sm">
+                                <i class="ph-fill ph-wifi-slash text-gray-400 text-lg mt-0.5"></i>
+                                <div>
+                                    <span class="block text-xs font-bold font-serif text-ink">Unplugged</span>
+                                    <span class="block text-[10px] text-gray-500 leading-tight">No Wifi in tents. Main lobby only.</span>
+                                </div>
+                            </div>
+                             <div class="flex items-start gap-2 p-2 bg-white/50 border border-ink/5 rounded-sm">
+                                <i class="ph-fill ph-campfire text-rust text-lg mt-0.5"></i>
+                                <div>
+                                    <span class="block text-xs font-bold font-serif text-ink">Campfire</span>
+                                    <span class="block text-[10px] text-gray-500 leading-tight">Community fires + s'mores nightly.</span>
+                                </div>
+                            </div>
+                             <div class="flex items-start gap-2 p-2 bg-white/50 border border-ink/5 rounded-sm">
+                                <i class="ph-fill ph-moon-stars text-ink text-lg mt-0.5"></i>
+                                <div>
+                                    <span class="block text-xs font-bold font-serif text-ink">Dark Sky</span>
+                                    <span class="block text-[10px] text-gray-500 leading-tight">Certified dark sky viewing area.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Check-in Logic (Tape Style) -->
+                        <div class="relative bg-paper border border-gray-300 p-4 mb-6 rotate-neg-1 shadow-sm">
+                            <div class="tape w-20 h-5 -top-2.5 left-1/2 -translate-x-1/2"></div>
+                             <h4 class="font-mono text-[10px] uppercase font-bold text-gray-400 mb-2 border-b border-gray-200 pb-1">Logistics</h4>
+                             <div class="flex justify-between items-center">
+                                 <div>
+                                     <span class="block text-[10px] text-gray-500 font-mono uppercase">Check In</span>
+                                     <span class="block text-lg font-serif font-bold text-ink">3:00 PM</span>
+                                 </div>
+                                 <i class="ph-light ph-arrow-right text-gray-300 text-2xl"></i>
+                                 <div class="text-right">
+                                     <span class="block text-[10px] text-gray-500 font-mono uppercase">Check Out</span>
+                                     <span class="block text-lg font-serif font-bold text-ink">10:00 AM</span>
+                                 </div>
+                             </div>
+                             <div class="mt-2 pt-2 border-t border-dashed border-gray-300">
+                                 <p class="text-[10px] text-alert font-mono"><i class="ph-bold ph-warning"></i> Late check-in requires prior call.</p>
+                             </div>
+                        </div>
+
+                        <!-- External Booking Visual -->
+                        <div class="bg-gray-100 p-3 rounded-sm flex items-center justify-between border border-gray-200">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center">
+                                    <i class="ph-bold ph-globe text-gray-400"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-gray-500 uppercase font-mono">Book via</span>
+                                    <span class="text-xs font-bold text-ink">undercanvas.com</span>
+                                </div>
+                            </div>
+                            <a href="#" class="text-xs font-mono font-bold text-rust hover:underline flex items-center gap-1" rel="nofollow">Open <i class="ph-bold ph-arrow-square-out"></i></a>
+                        </div>
+                        
+                        <div class="h-10"></div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="p-4 bg-white border-t border-ink/10 shrink-0 z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+                    <div class="flex gap-2 mb-3">
+                         <button class="flex-1 py-2 border border-gray-300 rounded-sm text-xs font-mono font-bold text-gray-600 hover:border-ink hover:text-ink transition-colors">
+                            <i class="ph-bold ph-paperclip"></i> Shortlist
+                        </button>
+                        <button class="flex-1 py-2 border border-gray-300 rounded-sm text-xs font-mono font-bold text-gray-600 hover:border-ink hover:text-ink transition-colors">
+                            <i class="ph-bold ph-share-network"></i> Share
+                        </button>
+                    </div>
+                    <button class="w-full py-3 bg-rust text-white font-mono font-bold uppercase tracking-widest text-xs shadow-rough hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all border border-ink flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-moon"></i> Set as Night 2 Stay
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+</body>
+</html>

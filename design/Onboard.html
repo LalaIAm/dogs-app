@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadDoggs | Build Your Profile</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#EAE7DC',
+                        ink: '#232323',
+                        rust: '#C8553D',
+                        sage: '#8E9C6D',
+                        sand: '#D8C3A5',
+                        alert: '#BC4B51',
+                    },
+                    fontFamily: {
+                        serif: ['Fraunces', 'serif'],
+                        mono: ['Space Mono', 'monospace'],
+                        hand: ['Reenie Beanie', 'cursive'],
+                    },
+                    boxShadow: {
+                        'rough': '4px 4px 0px 0px #232323',
+                        'rough-sm': '2px 2px 0px 0px #232323',
+                        'paper-floating': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0,0,0,0.1)',
+                    },
+                    backgroundImage: {
+                        'ruled-paper': "linear-gradient(#e5e0d0 1px, transparent 1px)",
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Global Texture & Reset */
+        body {
+            background-color: #EAE7DC;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .noise-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Form Interaction Classes */
+        .step-panel {
+            display: none;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .step-panel.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Input Styles */
+        .selection-card:checked + div {
+            border-color: #C8553D;
+            background-color: #fff8f6;
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0 #232323;
+        }
+        .selection-card:checked + div .check-mark {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Interest Chips */
+        .interest-chip:checked + span {
+            background-color: #232323;
+            color: #EAE7DC;
+            border-color: #232323;
+        }
+        
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #C8553D;
+            border: 2px solid #232323;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #d1d5db;
+            border-radius: 2px;
+            border: 1px solid #9ca3af;
+        }
+
+        /* Tape Effect */
+        .tape {
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            backdrop-filter: blur(1px);
+            position: absolute;
+            z-index: 20;
+        }
+
+        /* Paper texture overlay for card */
+        .paper-grain {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Handwritten font size adjustment */
+        .hand-lg { font-size: 1.75rem; line-height: 1; }
+    </style>
+</head>
+<body class="text-ink antialiased flex flex-col items-center py-6 sm:py-12 px-4 relative">
+    <div class="noise-layer"></div>
+
+    <!-- Header / Nav -->
+    <header class="w-full max-w-4xl flex justify-between items-center mb-10 relative z-20">
+        <div class="flex items-center gap-2 select-none">
+            <i class="ph-fill ph-dog text-2xl text-rust"></i>
+            <span class="font-serif font-bold text-xl tracking-tight">RoadDoggs</span>
+        </div>
+        <button class="font-mono text-xs uppercase text-gray-400 hover:text-ink transition-colors border-b border-dashed border-gray-300 hover:border-ink">
+            Skip &amp; Configure Later
+        </button>
+    </header>
+
+    <!-- Main Wizard Container -->
+    <main class="w-full max-w-4xl relative">
+        
+        <!-- Workflow Progress (Map Style) -->
+        <div class="mb-12 px-4 select-none">
+            <div class="flex items-center justify-between relative max-w-2xl mx-auto">
+                <!-- Path Line -->
+                <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 border-t-2 border-dashed border-gray-300 -z-10"></div>
+                
+                <!-- Steps -->
+                <div class="step-dot flex flex-col items-center gap-3 cursor-pointer" onclick="goToStep(1)">
+                    <div id="dot-1" class="w-10 h-10 rounded-full bg-ink text-paper font-mono flex items-center justify-center text-sm border-2 border-ink relative z-10 transition-all duration-500 shadow-rough-sm">1</div>
+                    <span id="label-1" class="font-mono text-xs font-bold uppercase tracking-widest text-ink">The Crew</span>
+                </div>
+                
+                <div class="step-dot flex flex-col items-center gap-3 cursor-pointer" onclick="goToStep(2)">
+                    <div id="dot-2" class="w-10 h-10 rounded-full bg-paper text-gray-400 font-mono flex items-center justify-center text-sm border-2 border-gray-300 relative z-10 transition-all duration-500">2</div>
+                    <span id="label-2" class="font-mono text-xs font-bold uppercase tracking-widest text-gray-400">The Vibe</span>
+                </div>
+
+                <div class="step-dot flex flex-col items-center gap-3 cursor-pointer" onclick="goToStep(3)">
+                    <div id="dot-3" class="w-10 h-10 rounded-full bg-paper text-gray-400 font-mono flex items-center justify-center text-sm border-2 border-gray-300 relative z-10 transition-all duration-500">3</div>
+                    <span id="label-3" class="font-mono text-xs font-bold uppercase tracking-widest text-gray-400">The Rig</span>
+                </div>
+                
+                <div class="step-dot flex flex-col items-center gap-3 cursor-pointer" onclick="goToStep(4)">
+                    <div id="dot-4" class="w-10 h-10 rounded-full bg-paper text-gray-400 font-mono flex items-center justify-center text-sm border-2 border-gray-300 relative z-10 transition-all duration-500">4</div>
+                    <span id="label-4" class="font-mono text-xs font-bold uppercase tracking-widest text-gray-400">The Brain</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Form Area -->
+        <form id="onboarding-form" class="relative" onsubmit="return false;">
+            
+            <!-- STEP 1: THE CREW (Identity & Party) -->
+            <div id="step-1" class="step-panel active">
+                <div class="bg-white p-6 sm:p-12 shadow-paper-floating relative min-h-[500px] border border-gray-100 rounded-sm">
+                    <div class="paper-grain"></div>
+                    <div class="tape w-32 h-8 -top-4 left-1/2 -translate-x-1/2 rotate-1 opacity-90"></div>
+                    
+                    <!-- Content -->
+                    <div class="relative z-10">
+                        <div class="text-center mb-10">
+                            <h2 class="font-serif font-black text-3xl sm:text-4xl mb-3 text-ink">Who's hitting the road?</h2>
+                            <p class="font-mono text-sm text-gray-500 max-w-md mx-auto">This sets your default pace and stop recommendations. You can change this per trip.</p>
+                        </div>
+
+                        <!-- Travel Style Grid -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                            <label class="group cursor-pointer">
+                                <input type="radio" name="travel_style" value="solo" class="selection-card sr-only" checked>
+                                <div class="border-2 border-dashed border-gray-300 bg-gray-50 p-6 rounded-sm text-center h-full flex flex-col items-center justify-center transition-all duration-200 group-hover:border-gray-400 relative">
+                                    <div class="check-mark absolute top-2 right-2 opacity-0 transform scale-50 transition-all duration-300 text-rust"><i class="ph-fill ph-check-circle text-xl"></i></div>
+                                    <i class="ph-duotone ph-user text-4xl text-gray-400 mb-3 group-hover:text-ink group-hover:scale-110 transition-transform"></i>
+                                    <span class="font-serif font-bold text-lg text-ink">Solo</span>
+                                </div>
+                            </label>
+                            
+                            <label class="group cursor-pointer">
+                                <input type="radio" name="travel_style" value="couple" class="selection-card sr-only">
+                                <div class="border-2 border-dashed border-gray-300 bg-gray-50 p-6 rounded-sm text-center h-full flex flex-col items-center justify-center transition-all duration-200 group-hover:border-gray-400 relative">
+                                    <div class="check-mark absolute top-2 right-2 opacity-0 transform scale-50 transition-all duration-300 text-rust"><i class="ph-fill ph-check-circle text-xl"></i></div>
+                                    <i class="ph-duotone ph-users text-4xl text-gray-400 mb-3 group-hover:text-ink group-hover:scale-110 transition-transform"></i>
+                                    <span class="font-serif font-bold text-lg text-ink">Couple</span>
+                                </div>
+                            </label>
+
+                            <label class="group cursor-pointer">
+                                <input type="radio" name="travel_style" value="family" class="selection-card sr-only">
+                                <div class="border-2 border-dashed border-gray-300 bg-gray-50 p-6 rounded-sm text-center h-full flex flex-col items-center justify-center transition-all duration-200 group-hover:border-gray-400 relative">
+                                    <div class="check-mark absolute top-2 right-2 opacity-0 transform scale-50 transition-all duration-300 text-rust"><i class="ph-fill ph-check-circle text-xl"></i></div>
+                                    <i class="ph-duotone ph-baby-carriage text-4xl text-gray-400 mb-3 group-hover:text-ink group-hover:scale-110 transition-transform"></i>
+                                    <span class="font-serif font-bold text-lg text-ink">Family</span>
+                                </div>
+                            </label>
+
+                            <label class="group cursor-pointer">
+                                <input type="radio" name="travel_style" value="group" class="selection-card sr-only">
+                                <div class="border-2 border-dashed border-gray-300 bg-gray-50 p-6 rounded-sm text-center h-full flex flex-col items-center justify-center transition-all duration-200 group-hover:border-gray-400 relative">
+                                    <div class="check-mark absolute top-2 right-2 opacity-0 transform scale-50 transition-all duration-300 text-rust"><i class="ph-fill ph-check-circle text-xl"></i></div>
+                                    <i class="ph-duotone ph-users-three text-4xl text-gray-400 mb-3 group-hover:text-ink group-hover:scale-110 transition-transform"></i>
+                                    <span class="font-serif font-bold text-lg text-ink">The Pack</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Counters -->
+                        <div class="bg-paper/50 p-6 border border-gray-200 rounded-sm">
+                            <h3 class="font-mono text-xs font-bold uppercase text-gray-500 mb-4">Typical Party Composition</h3>
+                            <div class="flex flex-wrap gap-8 justify-center sm:justify-between">
+                                <!-- Humans -->
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right">
+                                        <div class="font-serif font-bold text-lg leading-none">Adults</div>
+                                        <div class="font-mono text-[10px] text-gray-500 uppercase">18+ yrs</div>
+                                    </div>
+                                    <div class="flex items-center border border-ink rounded-sm bg-white overflow-hidden shadow-sm">
+                                        <button class="px-3 py-2 hover:bg-gray-100 text-ink font-bold border-r border-gray-200">-</button>
+                                        <input type="text" value="2" class="w-10 text-center font-mono font-bold bg-transparent outline-none" readonly>
+                                        <button class="px-3 py-2 hover:bg-gray-100 text-ink font-bold border-l border-gray-200">+</button>
+                                    </div>
+                                </div>
+                                <!-- Kids -->
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right">
+                                        <div class="font-serif font-bold text-lg leading-none">Kids</div>
+                                        <div class="font-mono text-[10px] text-gray-500 uppercase">&lt; 18 yrs</div>
+                                    </div>
+                                    <div class="flex items-center border border-gray-300 rounded-sm bg-white overflow-hidden shadow-sm">
+                                        <button class="px-3 py-2 hover:bg-gray-100 text-gray-500 border-r border-gray-200">-</button>
+                                        <input type="text" value="0" class="w-10 text-center font-mono font-bold bg-transparent outline-none text-gray-500" readonly>
+                                        <button class="px-3 py-2 hover:bg-gray-100 text-ink font-bold border-l border-gray-200">+</button>
+                                    </div>
+                                </div>
+                                <!-- Pets -->
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right">
+                                        <div class="font-serif font-bold text-lg leading-none">Pets</div>
+                                        <div class="font-mono text-[10px] text-gray-500 uppercase">Fur babies</div>
+                                    </div>
+                                    <div class="flex items-center border border-gray-300 rounded-sm bg-white overflow-hidden shadow-sm">
+                                        <button class="px-3 py-2 hover:bg-gray-100 text-gray-500 border-r border-gray-200">-</button>
+                                        <input type="text" value="1" class="w-10 text-center font-mono font-bold bg-transparent outline-none text-gray-500" readonly>
+                                        <button class="px-3 py-2 hover:bg-gray-100 text-ink font-bold border-l border-gray-200">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: INTERESTS & VIBE -->
+            <div id="step-2" class="step-panel">
+                 <div class="bg-white p-6 sm:p-12 shadow-paper-floating relative min-h-[500px] border border-gray-100 rounded-sm">
+                    <div class="paper-grain"></div>
+                     <div class="tape w-24 h-8 -top-3 right-20 rotate-neg-2 opacity-80"></div>
+                     
+                     <div class="relative z-10">
+                         <div class="mb-8">
+                             <h2 class="font-serif font-black text-3xl sm:text-4xl mb-2 text-ink">What's your vibe?</h2>
+                             <p class="font-mono text-sm text-gray-500">Pick what you love. We'll hide the rest.</p>
+                         </div>
+
+                         <!-- Interest Tag Cloud -->
+                         <div class="mb-10">
+                             <label class="font-mono text-xs font-bold uppercase text-gray-400 mb-3 block">Interests (Select all that apply)</label>
+                             <div class="flex flex-wrap gap-2">
+                                <label class="cursor-pointer select-none">
+                                    <input type="checkbox" class="interest-chip sr-only" checked>
+                                    <span class="px-4 py-2 rounded-full border border-gray-300 font-mono text-xs font-bold text-gray-600 hover:border-ink transition-all inline-block hover:bg-gray-50">🌲 Nature</span>
+                                </label>
+                                <label class="cursor-pointer select-none">
+                                    <input type="checkbox" class="interest-chip sr-only">
+                                    <span class="px-4 py-2 rounded-full border border-gray-300 font-mono text-xs font-bold text-gray-600 hover:border-ink transition-all inline-block hover:bg-gray-50">🍔 Local Eats</span>
+                                </label>
+                                <label class="cursor-pointer select-none">
+                                    <input type="checkbox" class="interest-chip sr-only">
+                                    <span class="px-4 py-2 rounded-full border border-gray-300 font-mono text-xs font-bold text-gray-600 hover:border-ink transition-all inline-block hover:bg-gray-50">🎨 Art & Culture</span>
+                                </label>
+                                <label class="cursor-pointer select-none">
+                                    <input type="checkbox" class="interest-chip sr-only" checked>
+                                    <span class="px-4 py-2 rounded-full border border-gray-300 font-mono text-xs font-bold text-gray-600 hover:border-ink transition-all inline-block hover:bg-gray-50">👽 Weird Stuff</span>
+                                </label>
+                                <label class="cursor-pointer select-none">
+                                    <input type="checkbox" class="interest-chip sr-only">
+                                    <span class="px-4 py-2 rounded-full border border-gray-300 font-mono text-xs font-bold text-gray-600 hover:border-ink transition-all inline-block hover:bg-gray-50">🏰 History</span>
+                                </label>
+                                <label class="cursor-pointer select-none">
+                                    <input type="checkbox" class="interest-chip sr-only">
+                                    <span class="px-4 py-2 rounded-full border border-gray-300 font-mono text-xs font-bold text-gray-600 hover:border-ink transition-all inline-block hover:bg-gray-50">👻 Haunted</span>
+                                </label>
+                                <label class="cursor-pointer select-none">
+                                    <input type="checkbox" class="interest-chip sr-only">
+                                    <span class="px-4 py-2 rounded-full border border-gray-300 font-mono text-xs font-bold text-gray-600 hover:border-ink transition-all inline-block hover:bg-gray-50">🍺 Breweries</span>
+                                </label>
+                                <label class="cursor-pointer select-none">
+                                    <input type="checkbox" class="interest-chip sr-only">
+                                    <span class="px-4 py-2 rounded-full border border-gray-300 font-mono text-xs font-bold text-gray-600 hover:border-ink transition-all inline-block hover:bg-gray-50">📸 Photography</span>
+                                </label>
+                             </div>
+                         </div>
+
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                             <!-- Budget Slider -->
+                             <div>
+                                 <div class="flex justify-between items-end mb-4">
+                                     <label class="font-mono text-xs font-bold uppercase text-gray-400">Nightly Budget</label>
+                                     <span class="font-hand text-2xl text-rust">$$ - Avg</span>
+                                 </div>
+                                 <input type="range" class="w-full" min="1" max="4" step="1" value="2">
+                                 <div class="flex justify-between mt-2 font-mono text-[10px] text-gray-400">
+                                     <span>Hostel ($)</span>
+                                     <span>Luxury ($$$$)</span>
+                                 </div>
+                             </div>
+
+                             <!-- Dietary -->
+                             <div>
+                                 <label class="font-mono text-xs font-bold uppercase text-gray-400 mb-3 block">Dietary Restrictions</label>
+                                 <div class="space-y-2">
+                                     <label class="flex items-center gap-3 cursor-pointer group">
+                                         <div class="w-5 h-5 border-2 border-gray-300 rounded-sm flex items-center justify-center group-hover:border-rust transition-colors bg-white">
+                                             <input type="checkbox" class="hidden peer">
+                                             <i class="ph-bold ph-check text-rust hidden peer-checked:block text-xs"></i>
+                                         </div>
+                                         <span class="font-serif text-ink">Vegetarian / Vegan options</span>
+                                     </label>
+                                     <label class="flex items-center gap-3 cursor-pointer group">
+                                         <div class="w-5 h-5 border-2 border-gray-300 rounded-sm flex items-center justify-center group-hover:border-rust transition-colors bg-white">
+                                             <input type="checkbox" class="hidden peer">
+                                             <i class="ph-bold ph-check text-rust hidden peer-checked:block text-xs"></i>
+                                         </div>
+                                         <span class="font-serif text-ink">Gluten-Free Required</span>
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+
+            <!-- STEP 3: THE RIG & ROAD -->
+            <div id="step-3" class="step-panel">
+                <div class="bg-white p-6 sm:p-12 shadow-paper-floating relative min-h-[500px] border border-gray-100 rounded-sm">
+                    <div class="paper-grain"></div>
+                    <div class="tape w-20 h-6 -top-2 left-10 rotate-2 opacity-60"></div>
+
+                    <div class="relative z-10">
+                        <div class="mb-8">
+                            <h2 class="font-serif font-black text-3xl sm:text-4xl mb-2 text-ink">How do you drive?</h2>
+                            <p class="font-mono text-sm text-gray-500">We optimize the routing based on your machine.</p>
+                        </div>
+
+                        <!-- Vehicle Type -->
+                        <div class="grid grid-cols-3 gap-4 mb-8">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="vehicle_type" value="gas" class="selection-card sr-only" checked onchange="toggleEV(false)">
+                                <div class="bg-paper border border-gray-200 p-4 rounded-sm text-center opacity-60 hover:opacity-100 transition-all shadow-sm">
+                                    <i class="ph-duotone ph-gas-pump text-3xl mb-2"></i>
+                                    <span class="block font-mono text-xs font-bold uppercase">Gas / Hybrid</span>
+                                </div>
+                            </label>
+                            
+                            <label class="cursor-pointer">
+                                <input type="radio" name="vehicle_type" value="ev" class="selection-card sr-only" onchange="toggleEV(true)">
+                                <div class="bg-paper border border-gray-200 p-4 rounded-sm text-center opacity-60 hover:opacity-100 transition-all shadow-sm">
+                                    <i class="ph-duotone ph-lightning text-3xl mb-2"></i>
+                                    <span class="block font-mono text-xs font-bold uppercase">Electric (EV)</span>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" name="vehicle_type" value="rv" class="selection-card sr-only" onchange="toggleEV(false)">
+                                <div class="bg-paper border border-gray-200 p-4 rounded-sm text-center opacity-60 hover:opacity-100 transition-all shadow-sm">
+                                    <i class="ph-duotone ph-car-profile text-3xl mb-2"></i>
+                                    <span class="block font-mono text-xs font-bold uppercase">RV / Van</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- EV Options (Hidden by default) -->
+                        <div id="ev-options" class="bg-sky-50 border border-sky-100 p-4 rounded-sm mb-8 hidden animate-fade-in-down">
+                            <h4 class="font-mono text-xs font-bold text-sky-800 uppercase mb-3"><i class="ph-fill ph-plug"></i> EV Specifics</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Max Range (Miles)</label>
+                                    <input type="number" class="w-full bg-white border border-gray-300 p-2 font-mono text-sm rounded-sm focus:border-ink outline-none" placeholder="300">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Connector</label>
+                                    <select class="w-full bg-white border border-gray-300 p-2 font-mono text-sm rounded-sm focus:border-ink outline-none">
+                                        <option>Tesla (NACS)</option>
+                                        <option>CCS</option>
+                                        <option>CHAdeMO</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Driving Constraints -->
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                             <div>
+                                 <div class="flex justify-between items-end mb-2">
+                                     <label class="font-mono text-xs font-bold uppercase text-gray-400">Max Driving / Day</label>
+                                     <span class="font-hand text-2xl text-rust">6 hours</span>
+                                 </div>
+                                 <input type="range" class="w-full accent-rust" min="2" max="12" value="6">
+                                 <div class="flex justify-between mt-2 font-mono text-[10px] text-gray-400">
+                                     <span>2h (Lame)</span>
+                                     <span>12h (Beast)</span>
+                                 </div>
+                             </div>
+
+                             <div>
+                                 <label class="font-mono text-xs font-bold uppercase text-gray-400 mb-3 block">Road Constraints</label>
+                                 <div class="space-y-2">
+                                     <label class="flex items-center gap-2 cursor-pointer select-none">
+                                         <input type="checkbox" class="accent-ink w-4 h-4 rounded-sm border-gray-300">
+                                         <span class="font-serif text-sm">Avoid Tolls</span>
+                                     </label>
+                                      <label class="flex items-center gap-2 cursor-pointer select-none">
+                                         <input type="checkbox" class="accent-ink w-4 h-4 rounded-sm border-gray-300">
+                                         <span class="font-serif text-sm">Avoid Unpaved Roads</span>
+                                     </label>
+                                      <label class="flex items-center gap-2 cursor-pointer select-none">
+                                         <input type="checkbox" class="accent-ink w-4 h-4 rounded-sm border-gray-300">
+                                         <span class="font-serif text-sm">Avoid Highways</span>
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: BRAIN & ACCOUNT -->
+            <div id="step-4" class="step-panel">
+                <div class="bg-white p-6 sm:p-12 shadow-paper-floating relative min-h-[500px] border border-gray-100 rounded-sm">
+                    <div class="paper-grain"></div>
+                    <div class="tape w-20 h-6 -top-2 left-1/2 -translate-x-1/2 rotate-90 opacity-40"></div>
+                     
+                    <div class="relative z-10">
+                        <div class="mb-8">
+                            <h2 class="font-serif font-black text-3xl sm:text-4xl mb-2 text-ink">Fine-tune the Machine.</h2>
+                            <p class="font-mono text-sm text-gray-500">Configure how our AI learns from you.</p>
+                        </div>
+
+                        <!-- AI Chat Refinement -->
+                        <div class="bg-[#fcfcf2] border border-gray-300 p-6 rounded-sm mb-8 relative">
+                            <div class="absolute -top-3 left-6 bg-sage text-white px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider rounded-sm shadow-sm">AI Co-Pilot</div>
+                            <p class="font-serif font-bold text-lg mb-4 text-ink">Is there anything specific you want the AI to always remember?</p>
+                            
+                            <textarea class="w-full bg-transparent border-b-2 border-dashed border-gray-300 p-2 font-hand text-xl focus:outline-none focus:border-rust resize-none min-h-[80px]" placeholder="e.g. 'I hate chain restaurants', 'Always find coffee before 9am', 'My dog hates elevators'"></textarea>
+                            
+                            <div class="mt-4 flex flex-wrap gap-4 border-t border-gray-200 pt-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <div class="relative inline-block w-8 align-middle select-none transition duration-200 ease-in">
+                                        <input type="checkbox" checked class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 border-gray-300 appearance-none cursor-pointer checked:right-0 checked:border-rust"/>
+                                        <label class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer checked:bg-rust"></label>
+                                    </div>
+                                    <span class="font-mono text-xs text-gray-500">Use past trips to refine</span>
+                                </label>
+
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <div class="relative inline-block w-8 align-middle select-none transition duration-200 ease-in">
+                                        <input type="checkbox" checked class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-2 border-gray-300 appearance-none cursor-pointer checked:right-0 checked:border-rust"/>
+                                        <label class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer checked:bg-rust"></label>
+                                    </div>
+                                    <span class="font-mono text-xs text-gray-500">Enable Push Notifications</span>
+                                </label>
+                            </div>
+                        </div>
+
+                         <div class="bg-gray-50 p-6 border border-gray-200 text-center rounded-sm">
+                             <h3 class="font-serif font-bold text-xl mb-2">You're all set!</h3>
+                             <p class="font-mono text-xs text-gray-500 mb-6">Your profile is saved. Let's plan your first adventure.</p>
+                             
+                             <button type="button" onclick="alert('Redirecting to Dashboard...')" class="w-full bg-ink text-paper font-mono font-bold uppercase py-3 rounded-sm shadow-rough hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+                                 Start Planning ➔
+                             </button>
+                         </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls (Floating Footer) -->
+            <div class="mt-8 flex justify-between items-center px-2">
+                <button type="button" id="back-btn" class="font-mono text-sm font-bold text-gray-400 hover:text-ink invisible flex items-center gap-2" onclick="changeStep(-1)">
+                    <i class="ph-bold ph-arrow-left"></i> Back
+                </button>
+                
+                <div class="font-hand text-2xl text-rust hidden sm:block rotate-neg-2">Take your time...</div>
+
+                <button type="button" id="next-btn" class="bg-rust text-white px-8 py-3 font-mono font-bold uppercase hover:bg-ink transition-colors shadow-rough-sm rounded-sm hover:translate-y-[-2px] flex items-center gap-2" onclick="changeStep(1)">
+                    Next Step <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Decoration Elements (Moved further left to clear form) -->
+        <div class="absolute top-32 -left-52 xl:-left-72 hidden lg:block opacity-90 rotate-neg-6 pointer-events-none select-none transition-all duration-700">
+            <div class="relative group">
+                <img src="https://images.unsplash.com/photo-1516939884455-1445c8652f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=240&q=80" class="w-48 border-4 border-white shadow-xl grayscale sepia-[.2] rotate-3" alt="Dog in car">
+                <div class="tape w-24 h-6 -top-3 left-12 rotate-1 bg-white/60 shadow-sm backdrop-blur-[1px] absolute z-20"></div>
+                <!-- Handwritten caption -->
+                <div class="absolute -bottom-12 left-2 font-hand text-3xl text-ink/80 -rotate-3">Plan wild.</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Logic Script -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function updateUI() {
+            // Panels
+            document.querySelectorAll('.step-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+
+            // Dots & Labels
+            for(let i=1; i<=totalSteps; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                const label = document.getElementById(`label-${i}`);
+                
+                if(i < currentStep) {
+                    // Completed
+                    dot.className = "w-10 h-10 rounded-full bg-rust text-white font-mono flex items-center justify-center text-sm border-2 border-rust relative z-10 transition-all duration-500";
+                    dot.innerHTML = '<i class="ph-bold ph-check"></i>';
+                    label.className = "font-mono text-xs font-bold uppercase tracking-widest text-rust";
+                } else if(i === currentStep) {
+                    // Active
+                    dot.className = "w-10 h-10 rounded-full bg-ink text-paper font-mono flex items-center justify-center text-sm border-2 border-ink relative z-10 transition-all duration-500 shadow-rough-sm scale-110";
+                    dot.innerHTML = i;
+                    label.className = "font-mono text-xs font-bold uppercase tracking-widest text-ink";
+                } else {
+                    // Pending
+                    dot.className = "w-10 h-10 rounded-full bg-paper text-gray-400 font-mono flex items-center justify-center text-sm border-2 border-gray-300 relative z-10 transition-all duration-500";
+                    dot.innerHTML = i;
+                    label.className = "font-mono text-xs font-bold uppercase tracking-widest text-gray-400";
+                }
+            }
+
+            // Buttons
+            const backBtn = document.getElementById('back-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            if(currentStep === 1) {
+                backBtn.classList.add('invisible');
+            } else {
+                backBtn.classList.remove('invisible');
+            }
+
+            if(currentStep === totalSteps) {
+                nextBtn.classList.add('hidden'); // Hide next on last step, main submit is inside the card
+            } else {
+                nextBtn.classList.remove('hidden');
+                nextBtn.innerHTML = `Next Step <i class="ph-bold ph-arrow-right"></i>`;
+            }
+
+            // Scroll to top of form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function changeStep(dir) {
+            const newStep = currentStep + dir;
+            if(newStep >= 1 && newStep <= totalSteps) {
+                currentStep = newStep;
+                updateUI();
+            }
+        }
+        
+        function goToStep(step) {
+            // Only allow going back or one step forward from current max progress (simple validation bypass for UX demo)
+            currentStep = step;
+            updateUI();
+        }
+
+        function toggleEV(isEV) {
+            const evSection = document.getElementById('ev-options');
+            if(isEV) {
+                evSection.classList.remove('hidden');
+            } else {
+                evSection.classList.add('hidden');
+            }
+        }
+    </script>
+
+    <style>
+         /* Toggle Switch Custom */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #C8553D;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #C8553D;
+        }
+
+        /* Animation Utilities */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 0.3s ease-out forwards;
+        }
+    </style>
+</body>
+</html>

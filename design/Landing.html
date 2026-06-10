@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadDoggs | The Un-Map</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;family=Reenie+Beanie&amp;display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#EAE7DC',
+                        ink: '#232323',
+                        rust: '#C8553D',
+                        sage: '#8E9C6D',
+                        sand: '#D8C3A5',
+                        tape: 'rgba(255, 255, 255, 0.4)',
+                    },
+                    fontFamily: {
+                        serif: ['Fraunces', 'serif'],
+                        mono: ['Space Mono', 'monospace'],
+                        hand: ['Reenie Beanie', 'cursive'],
+                    },
+                    backgroundImage: {
+                        'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
+                        'paper-texture': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                    },
+                    animation: {
+                        'drift': 'drift 15s ease-in-out infinite',
+                        'scribble': 'scribble 0.5s steps(10) forwards',
+                    },
+                    keyframes: {
+                        drift: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-15px) rotate(1deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Global Texture Effect */
+        body {
+            background-color: #EAE7DC;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+        }
+        
+        .noise-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Handwritten Underline */
+        .scribble-underline {
+            position: relative;
+            display: inline-block;
+        }
+        .scribble-underline::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 100%;
+            height: 8px;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='9' viewBox='0 0 200 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.00025 6.99997C2.00025 6.99997 23.3659 2.05921 59.7547 3.55918C96.1435 5.05915 137.989 7.49994 197.973 2.50002' stroke='%23C8553D' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            transform: rotate(-1deg);
+        }
+
+        /* Tape Effect */
+        .tape {
+            background-color: rgba(255, 255, 235, 0.6);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            backdrop-filter: blur(2px);
+            transform: rotate(-45deg);
+            position: absolute;
+            z-index: 10;
+        }
+
+        /* Film Grain Filter for Images */
+        .film-look {
+            filter: contrast(1.1) brightness(1.1) sepia(0.3) grayscale(0.2);
+            transition: filter 0.5s ease;
+        }
+        .film-look:hover {
+            filter: contrast(1) brightness(1) sepia(0) grayscale(0);
+        }
+
+        /* Parallax Utility */
+        .parallax-wrap { will-change: transform; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #EAE7DC; }
+        ::-webkit-scrollbar-thumb { background: #232323; border-radius: 2px; }
+    </style>
+</head>
+<body class="text-ink antialiased overflow-x-hidden selection:bg-rust selection:text-white">
+
+    <div class="noise-layer"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 p-6 flex justify-between items-center mix-blend-difference text-paper pointer-events-none">
+        <a href="#" class="pointer-events-auto group" rel="nofollow">
+            <span class="font-serif font-black text-3xl tracking-tighter">RoadDoggs</span>
+            <span class="font-hand text-rust text-xl block -mt-3 ml-12 rotate-[-5deg] group-hover:rotate-0 transition-transform">beta vol.3</span>
+        </a>
+        <a class="pointer-events-auto bg-paper text-ink rounded-sm px-4 py-2 font-mono text-xs uppercase hover:bg-rust hover:text-white transition-colors border border-ink" href="/log-in">[ LOG IN ]</a>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="relative min-h-[110vh] pt-32 px-6 overflow-hidden flex flex-col items-center">
+        <!-- Floating Elements Background -->
+        <div class="absolute top-1/4 left-10 font-hand text-6xl text-ink/10 -rotate-12 pointer-events-none select-none">Are we there yet?</div>
+        <div class="absolute bottom-1/4 right-10 font-hand text-6xl text-ink/10 rotate-12 pointer-events-none select-none">No Signal. Good.</div>
+
+        <div class="max-w-5xl mx-auto w-full relative z-10 text-center mt-12 md:mt-24">
+            <p class="font-mono text-xs md:text-sm text-rust uppercase tracking-[0.3em] mb-6">/// coordinates_unknown</p>
+            
+            <h1 class="font-serif font-black text-[15vw] md:text-[8rem] leading-[0.85] text-ink mix-blend-multiply relative inline-block" style="font-family: &quot;Playfair Display&quot;;">
+                GET <span class="text-transparent" style="-webkit-text-stroke: 2px #232323;">LOST</span>
+                <!-- Scribble Arrow -->
+                <div class="absolute -right-8 md:-right-32 top-1/2 w-24 md:w-48 transform -translate-y-1/2">
+                    <svg viewBox="0 0 100 50" class="w-full text-rust transform rotate-12">
+                        <path d="M10,25 Q30,5 50,25 T90,25" fill="none" stroke="currentColor" stroke-width="2"></path>
+                        <path d="M85,20 L95,25 L88,33" fill="none" stroke="currentColor" stroke-width="2"></path>
+                    </svg>
+                    <span class="font-hand text-xl md:text-3xl text-ink absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                        (but like, on purpose)
+                    </span>
+                </div>
+            </h1>
+        </div>
+
+        <!-- Parallax Collage -->
+        <div class="relative w-full max-w-7xl mx-auto h-[700px] mt-12 md:mt-0 perspective-1000">
+            
+            <!-- Center Image (Anchor - Very Slow) -->
+            <div class="absolute left-1/2 top-10 -translate-x-1/2 w-64 md:w-96 aspect-[3/4] bg-white p-3 shadow-2xl rotate-2 parallax-el group z-20" data-speed="0.02">
+                <div class="tape w-24 h-8 -top-3 left-1/2 -translate-x-1/2"></div>
+                <img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=800&amp;q=80" class="w-full h-full object-cover film-look grayscale group-hover:grayscale-0 transition-all duration-700">
+                <p class="font-hand text-2xl text-center mt-2 text-ink">Highway One, 2023</p>
+            </div>
+
+            <!-- Left Image (Slow Drift) -->
+            <div class="absolute left-5 md:left-20 top-32 md:top-40 w-48 md:w-64 aspect-square bg-white p-3 shadow-xl -rotate-6 parallax-el z-10" data-speed="0.06">
+                <div class="tape w-20 h-6 -top-2 -left-2 rotate-[-30deg]"></div>
+                <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=800&amp;q=80" class="w-full h-full object-cover film-look">
+                <div class="absolute -bottom-10 -left-10 bg-rust text-paper font-mono text-xs px-3 py-1 rotate-12">
+                    CO-PILOT APPROVED
+                </div>
+            </div>
+
+            <!-- NEW ELEMENT: The Dog Polaroid (Bottom Right - Medium Drift) -->
+            <div class="absolute right-10 md:right-1/3 bottom-0 w-40 bg-white p-2 pb-8 shadow-lg rotate-12 parallax-el z-30" data-speed="0.09">
+                <div class="tape w-16 h-6 -top-2 right-4 -rotate-45 opacity-80"></div>
+                <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=400&amp;q=80" class="w-full aspect-square object-cover grayscale mix-blend-multiply opacity-90">
+                <p class="font-hand text-xl text-center mt-2 text-ink rotate-[-2deg]">Buster likes it.</p>
+            </div>
+
+            <!-- NEW ELEMENT: Post-It Note (Top Right - Slow Drift) -->
+            <div class="absolute right-5 md:right-40 top-20 w-48 bg-[#fff9c4] p-6 shadow-md -rotate-3 parallax-el z-0" data-speed="0.04">
+                <div class="w-3 h-3 rounded-full bg-red-800/20 mx-auto -mt-2 mb-2"></div>
+                <p class="font-hand text-2xl text-blue-900 leading-tight">
+                    "Don't forget to pack the extra kibble and map."
+                </p>
+            </div>
+
+            <!-- Right Note (Card - Slow) -->
+            <div class="absolute right-0 md:right-20 top-80 md:top-60 w-56 bg-sand p-6 shadow-lg rotate-3 parallax-el text-ink z-20" data-speed="0.08">
+                <div class="w-4 h-4 rounded-full bg-red-800/80 mx-auto mb-4 border border-ink/20 shadow-inner"></div> <!-- Thumb tack -->
+                <p class="font-hand text-3xl leading-tight">
+                    "Stop looking at the ETA and start looking out the window."
+                </p>
+                <a class="mt-6 w-full border border-ink py-2 uppercase font-mono text-xs hover:bg-ink hover:text-paper transition-colors" href="/page-2">PLAN TRIP</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MANIFESTO SECTION -->
+    <section class="py-32 px-6 border-t border-ink/10 relative">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-5xl md:text-7xl mb-12 relative inline-block" style="font-family: &quot;Playfair Display&quot;; font-weight: 700;">
+                The Anti-Grid <br> <span class="italic text-rust">Manifesto.</span>
+            </h2>
+            <div class="grid md:grid-cols-2 gap-12 font-mono text-sm leading-loose">
+                <div>
+                    <p class="mb-6">01. MOST APPS ARE ROBOTS.</p>
+                    <p class="text-gray-600">
+                        They want to save you 3 minutes. We want to show you the world's largest ball of twine. We optimize for memory-making, not efficiency.
+                    </p>
+                </div>
+                <div>
+                    <p class="mb-6">02. THE PACK IS REAL.</p>
+                    <p class="text-gray-600">
+                        Travel is better together. Our collaboration tools aren't just "share buttons"—they're built for voting, gas-splitting, and playlist-syncing.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: SMART POI ENGINE (Dark Mode) -->
+    <section class="py-24 bg-ink text-paper relative overflow-hidden border-t-8 border-sage">
+        <!-- Grid overlay -->
+        <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#8E9C6D 1px, transparent 1px), linear-gradient(90deg, #8E9C6D 1px, transparent 1px); background-size: 40px 40px;"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+            <!-- Text Content -->
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-3 h-3 bg-rust rounded-full animate-pulse"></span>
+                    <p class="font-mono text-xs text-sage uppercase tracking-widest">Algorithm v2.4 Active</p>
+                </div>
+                <h2 class="font-serif text-4xl md:text-6xl mb-8 leading-none" style="font-family: &quot;Playfair Display&quot;;">
+                    We find the places <br>
+                    <span class="text-rust italic">Google misses.</span>
+                </h2>
+                <div class="space-y-8 font-mono text-sm border-l border-white/10 pl-8">
+                    <div class="relative group">
+                         <h3 class="text-xl font-bold mb-2 text-paper group-hover:text-rust transition-colors">Smart POI Discovery</h3>
+                         <p class="text-white/60 leading-relaxed">
+                             Our engine scans for "high-vibe" keywords in user reviews—diner pie, haunted motels, scenic overlooks—not just star ratings.
+                         </p>
+                    </div>
+                    <div class="relative group">
+                         <h3 class="text-xl font-bold mb-2 text-paper group-hover:text-rust transition-colors">Vibe-Based Routing</h3>
+                         <p class="text-white/60 leading-relaxed">
+                             Select "Scenic" to prioritize curves and views, or "Direct" to just get there. We adjust the ETA based on your curiosity level.
+                         </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- "Radar" Visual -->
+            <div class="relative h-[400px] border-2 border-white/10 rounded-sm bg-white/5 backdrop-blur-sm p-4 flex items-center justify-center overflow-hidden mx-4 md:mx-0">
+                <!-- Decorative Elements -->
+                <div class="absolute top-4 left-4 font-mono text-[10px] text-white/40">SCANNING SECTOR 7G</div>
+                <div class="absolute bottom-4 right-4 font-mono text-[10px] text-white/40">39.7392° N, 104.9903° W</div>
+                
+                <!-- Radar Rings -->
+                <div class="absolute w-[600px] h-[600px] border border-white/5 rounded-full"></div>
+                <div class="absolute w-[400px] h-[400px] border border-white/10 rounded-full"></div>
+                <div class="absolute w-[200px] h-[200px] border border-rust/50 rounded-full animate-ping" style="animation-duration: 3s;"></div>
+                
+                <!-- The "Found" Gem -->
+                <div class="relative z-10 text-center transform rotate-2 group cursor-pointer">
+                    <div class="bg-paper text-ink p-4 shadow-2xl max-w-xs relative transition-transform group-hover:scale-105">
+                        <div class="tape w-16 h-6 -top-3 left-1/2 -translate-x-1/2 bg-white/80 absolute rotate-2"></div>
+                        <p class="font-serif text-xl border-b-2 border-rust pb-2 mb-2">Giant Artichoke</p>
+                        <div class="flex justify-between font-mono text-[10px] uppercase text-gray-500">
+                             <span>Castroville, CA</span>
+                             <span class="text-rust font-bold">MATCH: 98%</span>
+                        </div>
+                    </div>
+                    <!-- Connector Line -->
+                    <div class="w-0.5 h-16 bg-rust mx-auto mt-2"></div>
+                    <div class="w-3 h-3 bg-rust rounded-full mx-auto"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL PROOF: THE DASHBOARD -->
+    <section class="py-20 border-b border-ink/10 overflow-hidden relative">
+        <!-- Background Scribble -->
+        <div class="absolute -right-20 top-10 opacity-10 pointer-events-none rotate-12 parallax-scroll" data-speed="0.05">
+            <svg width="400" height="400" viewBox="0 0 200 200">
+                <path d="M10,10 Q50,100 10,190 M30,10 Q90,100 30,190" fill="none" stroke="#232323" stroke-width="2"></path>
+            </svg>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
+                <div>
+                    <span class="font-hand text-3xl text-rust -rotate-2 block mb-2">Word on the street</span>
+                    <h2 class="font-serif text-4xl md:text-5xl">The Co-Pilot Reports.</h2>
+                </div>
+                <!-- Stamped Rating -->
+                <div class="border-2 border-rust p-2 px-4 rounded-sm rotate-2 opacity-90 mask-ink hover:rotate-0 transition-transform cursor-help parallax-scroll" data-speed="-0.02">
+                    <div class="flex text-rust gap-1 text-xl">
+                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star-half"></i>
+                    </div>
+                    <p class="font-mono text-[10px] text-center mt-1 uppercase tracking-widest text-rust font-bold">4.9/5 Avg. Rating</p>
+                </div>
+            </div>
+
+            <!-- Reviews (Scrapbook Style) -->
+            <div class="grid md:grid-cols-3 gap-8 md:gap-12 mb-20">
+                
+                <!-- Review 1: The Receipt (Parallax Slow) -->
+                <div class="relative group parallax-scroll" data-speed="0.03">
+                    <div class="bg-white p-6 shadow-sm border-t-8 border-dotted border-gray-300 relative rotate-1 transition-transform group-hover:rotate-0 h-full">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-paper rounded-full border border-gray-300 shadow-inner"></div> <!-- Thumbtack hole -->
+                        <p class="font-mono text-xs mb-4 text-gray-400">RECEIPT #0492 // USER: SARAH_J</p>
+                        <p class="font-serif text-xl leading-snug mb-6">
+                            "Finally, an app that understands I want to stop for weird roadside attractions, not just gas stations."
+                        </p>
+                        <div class="font-mono text-[10px] uppercase border-t border-ink/10 pt-4 flex justify-between mt-auto">
+                            <span>Route: Route 66</span>
+                            <span class="text-rust">VERIFIED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 2: The Napkin Note (Parallax Medium Reverse) -->
+                <div class="relative group mt-8 md:mt-0 parallax-scroll" data-speed="-0.04">
+                    <div class="bg-[#fcfcf0] p-6 shadow-lg -rotate-2 transition-transform group-hover:rotate-0 h-full relative">
+                        <div class="tape w-24 h-8 -top-3 right-10 rotate-3 opacity-80"></div>
+                        <p class="font-hand text-3xl leading-snug text-ink/90 mb-4 pt-4">
+                            "Saved us from a boring highway death. We found a campsite with zero cell service and 100% vibes."
+                        </p>
+                        <div class="absolute bottom-6 right-6 flex items-center gap-3">
+                            <div class="font-hand text-xl text-gray-500 transform -rotate-6">@Nomad_Mike</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 3: The Polaroid (Parallax Fast) -->
+                <div class="relative group parallax-scroll" data-speed="0.06">
+                    <div class="tape w-20 h-6 -top-2 left-10 -rotate-12 z-20"></div>
+                     <div class="bg-white p-3 pb-12 shadow-xl rotate-3 transition-transform group-hover:rotate-0 h-full">
+                         <div class="w-full aspect-[4/3] bg-gray-200 mb-4 overflow-hidden filter sepia-[.3]">
+                             <img src="https://images.unsplash.com/photo-1533630654593-b222d5d44449?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=400&amp;q=80" class="object-cover w-full h-full opacity-90 hover:opacity-100 transition-opacity">
+                         </div>
+                         <p class="font-hand text-2xl text-center text-ink/80 transform -rotate-1">
+                             "Best co-pilot ever. &lt;3"
+                         </p>
+                     </div>
+                </div>
+
+            </div>
+
+             <!-- Sticker/Stamp Bar (Brands) -->
+             <div class="border-t border-dashed border-ink/30 pt-10">
+                <p class="font-mono text-xs text-center mb-6 uppercase tracking-widest opacity-50">seen in the wild</p>
+                <div class="flex flex-wrap items-center justify-center gap-12 md:gap-24 opacity-50 grayscale mix-blend-multiply hover:opacity-80 transition-opacity duration-500">
+                    <!-- Using Typography as Logos for consistency -->
+                    <span class="font-serif font-black text-3xl tracking-tight">OUTSIDE</span>
+                    <span class="font-mono font-bold text-2xl tracking-tighter border-2 border-ink p-1 rotate-2">VanLife Mag</span>
+                    <span class="font-serif font-bold text-2xl italic">The Drifter</span>
+                    <span class="font-sans font-black text-2xl rotate-[-2deg]">HUCKBERRY</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES 01: THE EXPERIENCE (Collage Layout) -->
+    <section class="py-24 overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="mb-20">
+                <span class="font-hand text-4xl text-rust rotate-[-2deg] inline-block">Curated Vibes</span>
+                <h3 class="font-serif text-6xl mt-2">Tools for Drift.</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+                
+                <!-- Feature 1 -->
+                <div class="relative group">
+                    <div class="absolute inset-0 border-2 border-ink transform translate-x-4 translate-y-4 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform"></div>
+                    <div class="relative bg-paper border-2 border-ink p-8 h-full">
+                        <div class="flex justify-between items-start mb-8">
+                            <i class="ph ph-paint-brush text-4xl text-rust"></i>
+                            <span class="font-mono text-xs border border-ink px-2 py-1 rounded-full">REL 1.0</span>
+                        </div>
+                        <h4 class="font-serif text-3xl mb-4">Route Painter</h4>
+                        <p class="font-mono text-sm text-gray-600 mb-8 max-w-xs">
+                            Don't just pick a destination. Pick a mood. Scenic, haunted, or "barely a road."
+                        </p>
+                        <!-- Visual Mock -->
+                        <div class="bg-ink p-4 -mx-4 -mb-4 rotate-1 group-hover:rotate-0 transition-transform parallax-scroll" data-speed="0.04">
+                            <div class="h-2 w-full bg-rust mb-2"></div>
+                            <div class="flex justify-between font-mono text-[10px] text-paper/60 uppercase">
+                                <span>Start: Boring</span>
+                                <span>End: Epic</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Feature 2 -->
+                 <div class="relative group mt-12 md:mt-0">
+                    <div class="absolute inset-0 bg-sage transform -translate-x-4 translate-y-4 group-hover:-translate-x-2 group-hover:translate-y-2 transition-transform"></div>
+                    <div class="relative bg-white border-2 border-ink p-8 h-full">
+                         <div class="flex justify-between items-start mb-8">
+                            <i class="ph ph-users-three text-4xl text-ink"></i>
+                            <span class="font-mono text-xs border border-ink px-2 py-1 rounded-full">BETA</span>
+                        </div>
+                        <h4 class="font-serif text-3xl mb-4">Pack Planning</h4>
+                        <p class="font-mono text-sm text-gray-600 mb-8 max-w-xs">
+                            A shared canvas for the whole crew. Drag, drop, and vote on where to sleep.
+                        </p>
+                         <!-- Scribble -->
+                         <div class="absolute -right-6 top-1/2 transform -translate-y-1/2 rotate-90 md:rotate-0 parallax-scroll" data-speed="-0.03">
+                            <span class="font-hand text-2xl text-ink bg-sand px-2">"No more group texts"</span>
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: TECHNICAL CAPABILITIES (Blueprint Style) -->
+    <section class="py-24 bg-ink text-paper relative overflow-hidden">
+        <!-- Grid Background -->
+        <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+        <div class="max-w-6xl mx-auto px-6 relative z-10">
+            <div class="flex flex-col md:flex-row items-end justify-between mb-16 border-b border-paper/20 pb-8">
+                <div>
+                    <p class="font-mono text-rust text-xs uppercase mb-2">System_Check_Complete</p>
+                    <h2 class="font-serif text-5xl">Under the <span class="italic font-light">Hood</span></h2>
+                </div>
+                <!-- Hand drawn arrow -->
+                <div class="hidden md:block transform rotate-6">
+                    <p class="font-hand text-2xl text-paper/70">"Tech that works offline"</p>
+                    <svg width="100" height="40" class="text-paper/70 transform rotate-180">
+                         <path d="M10,20 Q50,5 90,20" fill="none" stroke="currentColor" stroke-width="1"></path>
+                         <path d="M15,15 L10,20 L18,25" fill="none" stroke="currentColor" stroke-width="1"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-12">
+                <!-- Tech 1 -->
+                <div class="border-l border-paper/20 pl-6 group">
+                    <div class="mb-4">
+                        <i class="ph ph-gas-pump text-3xl text-rust group-hover:scale-110 transition-transform inline-block"></i>
+                    </div>
+                    <h4 class="font-mono font-bold text-lg mb-2">FUEL_LOGIC</h4>
+                    <p class="font-mono text-xs text-paper/60 leading-relaxed">
+                        Algorithmic prediction of gas prices along remote routes. We know where the cheap fuel hides.
+                    </p>
+                </div>
+
+                <!-- Tech 2 -->
+                <div class="border-l border-paper/20 pl-6 group">
+                    <div class="mb-4">
+                        <i class="ph ph-cloud-warning text-3xl text-sage group-hover:scale-110 transition-transform inline-block"></i>
+                    </div>
+                    <h4 class="font-mono font-bold text-lg mb-2">STORM_AVOID</h4>
+                    <p class="font-mono text-xs text-paper/60 leading-relaxed">
+                        Real-time rerouting based on NOAA radar data. Dodge the hail, chase the sun.
+                    </p>
+                </div>
+
+                 <!-- Tech 3 -->
+                 <div class="border-l border-paper/20 pl-6 group">
+                    <div class="mb-4">
+                        <i class="ph ph-satellite text-3xl text-sand group-hover:scale-110 transition-transform inline-block"></i>
+                    </div>
+                    <h4 class="font-mono font-bold text-lg mb-2">ANALOG_CACHE</h4>
+                    <p class="font-mono text-xs text-paper/60 leading-relaxed">
+                        Downloads 50mi radius of maps automatically. Works when your bars hit zero.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW CTA SECTION -->
+    <section class="py-24 bg-rust relative overflow-hidden flex items-center justify-center text-paper border-b-8 border-ink">
+        <div class="absolute inset-0 noise-layer mix-blend-multiply opacity-20"></div>
+        <!-- Decorative Map Lines -->
+        <svg class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M-10 100 Q 50 -20 110 100" stroke="currentColor" fill="none" stroke-width="1" stroke-dasharray="5 5"></path>
+        </svg>
+
+        <div class="relative z-10 text-center max-w-3xl px-6">
+            <div class="inline-block border border-paper px-4 py-1 mb-8 rounded-full rotate-[-2deg] hover:rotate-0 transition-transform cursor-crosshair">
+                <span class="font-mono text-xs uppercase tracking-widest">Limited Beta Access // Vol. 3</span>
+            </div>
+            <h2 class="font-serif text-5xl md:text-7xl mb-8 leading-[0.9]">
+                Don't just drive. <br>
+                <span class="italic opacity-80">Roam.</span>
+            </h2>
+            <p class="font-mono text-sm md:text-base mb-10 opacity-90 max-w-lg mx-auto leading-relaxed">
+                Join 10,000+ early adopters finding the routes that don't show up on standard GPS.
+            </p>
+            <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+                <button class="bg-paper text-ink px-10 py-5 font-mono font-bold uppercase hover:bg-ink hover:text-paper transition-all shadow-[6px_6px_0px_0px_rgba(35,35,35,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none relative group">
+                    Start Your Engine
+                </button>
+                <a href="#" class="font-hand text-3xl text-paper hover:text-ink transition-colors rotate-3 hover:rotate-0" rel="nofollow">
+                    View Pricing -&gt;
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: BLOG / FIELD NOTES (Masonry/Scrapbook) -->
+    <section class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20 relative">
+                <h2 class="font-serif text-6xl">Field Notes</h2>
+                <span class="absolute top-0 right-1/4 font-hand text-3xl text-rust -rotate-6 hidden md:block">Stories from the road</span>
+            </div>
+
+            <!-- Masonry Layout -->
+            <div class="columns-1 md:columns-3 gap-8 space-y-8">
+                
+                <!-- Note 1 -->
+                <div class="break-inside-avoid relative group cursor-pointer">
+                    <div class="tape w-32 h-8 -top-3 left-1/2 -translate-x-1/2 z-10"></div>
+                    <div class="bg-white p-4 pb-8 shadow-lg rotate-1 transition-transform group-hover:rotate-0">
+                        <img src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?fm=jpg&amp;q=60&amp;w=3000&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c29sbyUyMHRyYXZlbGVyfGVufDB8fDB8fHww" class="w-full aspect-[4/3] object-cover filter sepia-[.3] mb-4">
+                        <h3 class="font-serif text-2xl mb-2">The Van Life Lie?</h3>
+                        <p class="font-mono text-xs text-gray-500 mb-4">Oct 12 • 4 min read</p>
+                        <p class="font-sans text-sm line-clamp-3">
+                            It's not all sunsets and perfectly brewed coffee. Sometimes it's a flat tire in Nevada.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Note 2 (Text Only) -->
+                <div class="break-inside-avoid relative group cursor-pointer pt-6">
+                    <div class="bg-rust text-paper p-8 shadow-lg -rotate-2 transition-transform group-hover:rotate-0">
+                        <i class="ph ph-quotes text-4xl opacity-50 mb-4"></i>
+                        <h3 class="font-serif text-3xl leading-tight mb-4">
+                            "I found a diner in Utah that serves pie better than my grandmother's."
+                        </h3>
+                        <div class="font-mono text-xs border-t border-paper/30 pt-4 uppercase">
+                            Location: [Redacted]
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Note 3 -->
+                <div class="break-inside-avoid relative group cursor-pointer">
+                     <div class="tape w-20 h-6 -top-2 -right-2 rotate-12 z-10 opacity-70"></div>
+                    <div class="bg-white p-4 pb-8 shadow-lg rotate-2 transition-transform group-hover:rotate-0">
+                        <img src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=600&amp;q=80" class="w-full aspect-square object-cover filter grayscale mb-4">
+                        <h3 class="font-serif text-2xl mb-2">Dog Friendly Route 66</h3>
+                        <p class="font-sans text-sm">
+                            A complete guide to the Mother Road with your four-legged best friend.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Note 4 -->
+                <div class="break-inside-avoid relative group cursor-pointer">
+                    <div class="bg-sage/20 border border-sage p-6 shadow-md rotate-[-1deg] hover:rotate-0 transition-transform">
+                        <span class="font-mono text-[10px] bg-sage text-white px-2 py-1 mb-2 inline-block">GUIDE</span>
+                        <h3 class="font-serif text-xl mb-2">Packing for 2 Weeks Off-Grid</h3>
+                        <ul class="font-hand text-xl list-disc pl-5 mt-4 space-y-1 text-ink/80">
+                            <li>Solar charger</li>
+                            <li>Extra kibble</li>
+                            <li>Real paper maps</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-ink text-paper py-20 border-t-8 border-rust relative">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20">
+            <div>
+                <h2 class="font-serif text-[15vw] md:text-[8rem] leading-[0.8]">GO.</h2>
+                <p class="font-mono text-sm max-w-sm mt-8 opacity-60">
+                    The couch will be there when you get back. <br>
+                    (Probably covered in dog hair anyway).
+                </p>
+                <div class="mt-12 flex flex-col items-start gap-4">
+                    <button class="bg-paper text-ink px-8 py-4 font-mono font-bold uppercase hover:bg-rust hover:text-white transition-colors border-2 border-paper">
+                        Download Beta App
+                    </button>
+                    <span class="font-hand text-xl text-rust rotate-[-2deg]">Free for early adopters</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-end items-start md:items-end">
+                <div class="grid grid-cols-2 gap-x-12 gap-y-4 font-mono text-sm uppercase mb-12">
+                    <a href="#" class="hover:text-rust hover:underline" rel="nofollow">Journal</a>
+                    <a href="#" class="hover:text-rust hover:underline" rel="nofollow">Mission</a>
+                    <a href="#" class="hover:text-rust hover:underline" rel="nofollow">Merch</a>
+                    <a href="#" class="hover:text-rust hover:underline" rel="nofollow">Support</a>
+                </div>
+                
+                <div class="flex gap-4">
+                     <a href="#" class="w-10 h-10 border border-paper/20 flex items-center justify-center hover:bg-paper hover:text-ink transition-colors" rel="nofollow"><i class="ph ph-instagram-logo text-xl"></i></a>
+                     <a href="#" class="w-10 h-10 border border-paper/20 flex items-center justify-center hover:bg-paper hover:text-ink transition-colors" rel="nofollow"><i class="ph ph-twitter-logo text-xl"></i></a>
+                </div>
+
+                <p class="font-mono text-[10px] opacity-30 mt-8">
+                    © 2023 ROADDOGGS INC. / BOULDER, CO / EST 2023
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Parallax Script -->
+    <script>
+        // High Performance Parallax
+        let scrollY = 0;
+        let ticking = false;
+
+        document.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateParallax();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        function updateParallax() {
+            // Standard vertical parallax
+            document.querySelectorAll('.parallax-el, .parallax-scroll').forEach(el => {
+                const speed = parseFloat(el.getAttribute('data-speed') || 0);
+                const rect = el.getBoundingClientRect();
+                
+                // Only animate if in viewport (with buffer)
+                if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
+                    // Calculate offset relative to viewport center for smoother effect
+                    const yPos = (scrollY * speed); 
+                    // Add subtle rotation based on scroll for that "drift" feel
+                    const rot = scrollY * 0.01; 
+                    
+                    // We use translate3d for GPU acceleration
+                    el.style.transform = `translate3d(0, ${yPos}px, 0) rotate(${rot * speed * 10}deg)`;
+                }
+            });
+        }
+    </script>
+
+</body></html>

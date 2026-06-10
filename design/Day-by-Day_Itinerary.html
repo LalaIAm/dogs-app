@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadDoggs | Itinerary</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#EAE7DC',
+                        ink: '#232323',
+                        rust: '#C8553D',
+                        sage: '#8E9C6D',
+                        sand: '#D8C3A5',
+                        alert: '#BC4B51',
+                    },
+                    fontFamily: {
+                        serif: ['Fraunces', 'serif'],
+                        mono: ['Space Mono', 'monospace'],
+                        hand: ['Reenie Beanie', 'cursive'],
+                    },
+                    backgroundImage: {
+                        'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
+                        'paper-texture': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                    },
+                    boxShadow: {
+                        'rough': '4px 4px 0px 0px #232323',
+                        'card': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                        'paper-floating': '2px 8px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    },
+                    animation: {
+                        'wiggle': 'wiggle 2s linear infinite',
+                    },
+                    keyframes: {
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-1deg)' },
+                            '50%': { transform: 'rotate(1deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Global Texture */
+        body {
+            background-color: #E2DFD2;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            overflow-y: hidden; 
+        }
+        
+        .noise-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Aesthetics */
+        .paper-card {
+            background-color: #fcfcf9;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tape-strip {
+            background-color: rgba(255, 255, 235, 0.5);
+            backdrop-filter: blur(2px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .stamp {
+            mask-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/8399/grunge.png');
+            mask-size: 200px;
+            mix-blend-mode: multiply;
+        }
+
+        /* Timeline Connector */
+        .timeline-line {
+            background-image: linear-gradient(#ccc 33%, rgba(255,255,255,0) 0%);
+            background-position: right;
+            background-size: 2px 10px;
+            background-repeat: repeat-y;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d1d1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #C8553D; }
+
+        /* Map specific styles */
+        .map-container {
+            filter: sepia(0.2) contrast(1.1);
+        }
+    </style>
+</head>
+<body class="text-ink antialiased h-screen flex flex-col">
+    <div class="noise-layer"></div>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="h-16 bg-[#Eae7dc] border-b border-ink/10 flex items-center justify-between px-4 z-40 shadow-sm relative shrink-0">
+        <div class="flex items-center gap-4">
+             <a href="#" class="flex items-center gap-2" rel="nofollow">
+                <div class="w-8 h-8 bg-ink text-paper rounded-full flex items-center justify-center border border-ink shadow-sm">
+                    <i class="ph-fill ph-dog"></i>
+                </div>
+                <div class="flex items-center text-sm font-mono font-bold uppercase gap-2">
+                    <span class="text-gray-400 hover:text-ink">My Trips</span>
+                    <i class="ph-bold ph-caret-right text-xs text-gray-300"></i>
+                    <span class="text-ink border-b-2 border-rust">Pacific Coast Drift</span>
+                </div>
+            </a>
+            <!-- Save Status -->
+            <div class="flex items-center gap-1.5 ml-4 opacity-60">
+                <div class="w-1.5 h-1.5 rounded-full bg-sage"></div>
+                <span class="text-[10px] font-mono tracking-wide uppercase text-gray-500">Saved 2m ago</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Nav Actions -->
+            <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors" title="Map View">
+                <i class="ph-bold ph-map-trifold text-lg"></i>
+            </button>
+            <button class="w-8 h-8 flex items-center justify-center rounded-full bg-ink text-paper" title="Itinerary View">
+                <i class="ph-bold ph-list-dashes text-lg"></i>
+            </button>
+            <div class="h-4 w-px bg-gray-300 mx-2"></div>
+            
+            <div class="flex -space-x-2 items-center mr-2">
+                <div class="w-8 h-8 rounded-full border-2 border-paper bg-gray-300 overflow-hidden"><img src="https://i.pravatar.cc/100?img=12" class="w-full h-full object-cover"></div>
+                <div class="w-8 h-8 rounded-full border-2 border-paper bg-gray-300 overflow-hidden"><img src="https://i.pravatar.cc/100?img=33" class="w-full h-full object-cover"></div>
+            </div>
+            
+            <button class="bg-gray-200 text-ink px-3 py-1.5 font-mono font-bold uppercase text-[10px] border border-transparent hover:border-ink rounded-sm transition-all">
+                Share
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= TRIP HERO STRIP ================= -->
+    <div class="bg-white border-b border-ink/10 px-6 py-4 flex justify-between items-center shrink-0 z-30 shadow-sm">
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="font-serif font-black text-2xl tracking-tight text-ink">Pacific Coast Drift</h1>
+                <span class="px-2 py-0.5 border border-rust text-rust text-[10px] font-mono font-bold uppercase rounded-full bg-rust/5">Draft</span>
+            </div>
+            <div class="flex items-center gap-4 mt-1">
+                <span class="font-mono text-xs text-gray-500"><i class="ph-bold ph-calendar text-rust"></i> Oct 12 — Oct 18</span>
+                <span class="font-mono text-xs text-gray-500"><i class="ph-bold ph-arrow-right text-rust"></i> SF to LA</span>
+            </div>
+        </div>
+        <div class="flex gap-6 items-center">
+            <div class="text-right">
+                <span class="block font-mono text-[10px] uppercase text-gray-400">Total Distance</span>
+                <span class="font-serif font-bold text-lg">480 mi</span>
+            </div>
+            <div class="text-right">
+                <span class="block font-mono text-[10px] uppercase text-gray-400">Drive Time</span>
+                <span class="font-serif font-bold text-lg">12h 45m</span>
+            </div>
+            <div class="text-right">
+                <span class="block font-mono text-[10px] uppercase text-gray-400">Days</span>
+                <span class="font-serif font-bold text-lg">7</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN LAYOUT ================= -->
+    <main class="flex-grow flex overflow-hidden">
+        
+        <!-- === LEFT: DAY SELECTOR === -->
+        <aside class="w-64 bg-[#f4f4ec] border-r border-ink/10 flex flex-col overflow-y-auto z-20">
+            <div class="p-4 sticky top-0 bg-[#f4f4ec] z-10 border-b border-ink/5">
+                <h3 class="font-mono text-[10px] uppercase tracking-widest text-gray-500 mb-2">Itinerary Index</h3>
+                <button class="w-full py-2 border border-dashed border-gray-400 rounded-sm font-mono text-xs text-gray-500 hover:border-rust hover:text-rust transition-colors flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-plus"></i> Add Day
+                </button>
+            </div>
+
+            <!-- Day List -->
+            <div class="space-y-1 p-2">
+                <!-- Active Day -->
+                <div class="p-3 bg-white border border-ink shadow-rough relative cursor-pointer group transition-transform hover:translate-x-1">
+                    <div class="absolute -left-1 top-3 w-1 h-8 bg-rust"></div>
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-serif font-bold text-lg text-ink">Day 1</span>
+                        <span class="font-mono text-[10px] text-gray-400">Oct 12</span>
+                    </div>
+                    <p class="font-mono text-xs text-gray-600 truncate">SF → Big Sur</p>
+                    <div class="flex gap-2 mt-2">
+                        <span class="text-[10px] text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-100 flex items-center gap-1"><i class="ph-fill ph-warning-circle"></i> Heavy</span>
+                    </div>
+                </div>
+
+                <!-- Inactive Day -->
+                <div class="p-3 hover:bg-white border border-transparent hover:border-gray-300 cursor-pointer transition-all group opacity-70 hover:opacity-100">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-serif font-bold text-lg text-gray-500 group-hover:text-ink">Day 2</span>
+                        <span class="font-mono text-[10px] text-gray-400">Oct 13</span>
+                    </div>
+                     <p class="font-mono text-xs text-gray-500 truncate">Big Sur → Cambria</p>
+                </div>
+
+                <!-- Inactive Day -->
+                <div class="p-3 hover:bg-white border border-transparent hover:border-gray-300 cursor-pointer transition-all group opacity-70 hover:opacity-100">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-serif font-bold text-lg text-gray-500 group-hover:text-ink">Day 3</span>
+                        <span class="font-mono text-[10px] text-gray-400">Oct 14</span>
+                    </div>
+                     <p class="font-mono text-xs text-gray-500 truncate">Cambria → San Luis Obispo</p>
+                </div>
+                 <!-- Inactive Day -->
+                <div class="p-3 hover:bg-white border border-transparent hover:border-gray-300 cursor-pointer transition-all group opacity-70 hover:opacity-100">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-serif font-bold text-lg text-gray-500 group-hover:text-ink">Day 4</span>
+                        <span class="font-mono text-[10px] text-gray-400">Oct 15</span>
+                    </div>
+                     <p class="font-mono text-xs text-gray-500 truncate">SLO → Santa Barbara</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- === CENTER: ITINERARY TIMELINE === -->
+        <section class="flex-1 bg-[#Eae7dc] overflow-y-auto relative pb-20">
+            <!-- Notebook Binding Holes (Visual Flair) -->
+            <div class="absolute left-0 top-0 bottom-0 w-8 flex flex-col items-center gap-8 py-8 opacity-20 pointer-events-none">
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+                <div class="w-3 h-3 rounded-full bg-black"></div>
+            </div>
+
+            <div class="max-w-3xl mx-auto px-8 py-10 pl-16">
+                
+                <!-- Day Header -->
+                <div class="flex justify-between items-end mb-8 border-b-2 border-dashed border-gray-400 pb-4">
+                    <div>
+                        <h2 class="font-serif font-black text-4xl text-ink">Day 1: The Departure</h2>
+                        <div class="flex items-center gap-3 mt-2 font-mono text-xs text-gray-600">
+                            <span class="flex items-center gap-1"><i class="ph-bold ph-sun text-rust"></i> 72°F Sunny</span>
+                            <span>•</span>
+                            <span class="flex items-center gap-1"><i class="ph-bold ph-moon-stars"></i> Sunset 6:45 PM</span>
+                        </div>
+                    </div>
+                    <!-- Pace Stamp -->
+                    <div class="border-4 border-rust text-rust p-1 px-3 -rotate-12 font-black font-mono text-xl uppercase opacity-80 mix-blend-multiply stamp">
+                        Pace: Packed
+                    </div>
+                </div>
+
+                <!-- Daily Warnings -->
+                <div class="bg-red-50 border border-red-200 text-red-800 p-3 rounded-sm mb-8 flex items-start gap-3 shadow-sm">
+                    <i class="ph-bold ph-warning-octagon text-xl mt-0.5"></i>
+                    <div>
+                        <strong class="block font-serif text-sm">Constraint Violation</strong>
+                        <p class="font-mono text-[11px] leading-tight mt-1">Total drive time (4h 20m) exceeds your preference (4h max). Consider stopping in Santa Cruz to break it up.</p>
+                    </div>
+                    <button class="ml-auto text-xs underline font-mono hover:text-red-950">Fix</button>
+                </div>
+
+
+                <!-- --- TIMELINE ITEMS --- -->
+
+                <!-- 1. Start Point -->
+                <div class="flex gap-6 relative group">
+                    <!-- Time Col -->
+                    <div class="w-16 text-right pt-4 shrink-0">
+                        <span class="font-mono font-bold text-sm text-ink block">09:00</span>
+                        <span class="font-mono text-[10px] text-gray-500 block">AM</span>
+                    </div>
+                    <!-- Line Col -->
+                    <div class="flex flex-col items-center shrink-0 w-8">
+                        <div class="w-3 h-3 bg-black rounded-full mt-5 relative z-10 border-2 border-[#Eae7dc]"></div>
+                        <div class="w-0.5 flex-1 bg-gray-300 border-r-2 border-dotted border-gray-400"></div>
+                    </div>
+                    <!-- Content Col -->
+                    <div class="flex-1 pb-8">
+                        <div class="paper-card p-4 rounded-sm flex justify-between items-start relative hover:shadow-md transition-shadow">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <i class="ph-fill ph-house text-gray-400"></i>
+                                    <h3 class="font-serif font-bold text-lg">Mission District, SF</h3>
+                                </div>
+                                <p class="font-mono text-xs text-gray-500">Starting location loaded from profile.</p>
+                            </div>
+                            <div class="opacity-0 group-hover:opacity-100 flex gap-2">
+                                <button class="p-1 hover:bg-gray-100 rounded"><i class="ph-bold ph-pencil-simple text-gray-500"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drive Segment -->
+                <div class="flex gap-6 relative -mt-6 mb-4">
+                    <div class="w-16"></div> <!-- Time Placeholder -->
+                    <div class="w-8 flex flex-col items-center">
+                        <div class="w-0.5 h-full bg-gray-300 border-r-2 border-dotted border-gray-400"></div>
+                    </div>
+                    <div class="flex-1 py-2">
+                        <div class="inline-flex items-center gap-3 bg-white/50 border border-gray-300 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                            <i class="ph-fill ph-car text-rust"></i>
+                            <span class="font-mono text-xs font-bold text-ink">1h 15m drive</span>
+                            <span class="w-px h-3 bg-gray-300"></span>
+                            <span class="font-mono text-[10px] text-gray-500">Light Traffic</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Activity Stop -->
+                <div class="flex gap-6 relative group">
+                    <div class="w-16 text-right pt-4 shrink-0">
+                        <span class="font-mono font-bold text-sm text-ink block">10:15</span>
+                        <span class="font-mono text-[10px] text-gray-500 block">Arrival</span>
+                    </div>
+                    <div class="flex flex-col items-center shrink-0 w-8">
+                        <div class="w-8 h-8 bg-white border-2 border-ink rounded-full mt-2 relative z-10 flex items-center justify-center shadow-sm">
+                            <i class="ph-fill ph-camera text-rust"></i>
+                        </div>
+                        <div class="w-0.5 flex-1 bg-gray-300 border-r-2 border-dotted border-gray-400"></div>
+                    </div>
+                    <div class="flex-1 pb-8">
+                        <div class="bg-white border text-ink p-0 rounded-sm shadow-sm hover:shadow-paper-floating transition-all duration-300 relative overflow-hidden group/card transform hover:-translate-y-1">
+                            <!-- Image Header -->
+                            <div class="h-24 w-full bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover filter sepia-[.2]">
+                                <div class="absolute top-2 right-2 flex gap-1">
+                                     <span class="bg-black/60 text-white backdrop-blur px-2 py-0.5 text-[10px] font-mono rounded">1h Stop</span>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-serif font-bold text-xl">Shark Fin Cove</h3>
+                                    <div class="flex gap-1 text-yellow-500 text-xs">
+                                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                                    </div>
+                                </div>
+                                <p class="font-mono text-xs text-gray-500 mt-1">Scenic coastal rock formation resembling a shark fin. Great for photos.</p>
+                                
+                                <!-- Collaborator Note -->
+                                <div class="mt-4 flex items-start gap-2 bg-yellow-50 border border-yellow-100 p-2 rounded-sm rotate-1 max-w-[80%]">
+                                    <img src="https://i.pravatar.cc/100?img=33" class="w-5 h-5 rounded-full border border-ink">
+                                    <div class="flex-1">
+                                        <p class="font-hand text-lg text-ink leading-5">"Don't forget the drone batteries!"</p>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="mt-3 pt-3 border-t border-gray-100 flex gap-4 text-xs font-mono text-gray-400 opacity-60 group-hover/card:opacity-100 transition-opacity">
+                                    <button class="hover:text-rust"><i class="ph-bold ph-pencil-simple"></i> Edit</button>
+                                    <button class="hover:text-rust"><i class="ph-bold ph-clock"></i> Reschedule</button>
+                                    <button class="hover:text-alert"><i class="ph-bold ph-trash"></i> Remove</button>
+                                </div>
+                            </div>
+                            <!-- Drag Handle -->
+                            <div class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-300 opacity-0 group-hover/card:opacity-100 cursor-grab p-2">
+                                <i class="ph-bold ph-dots-six-vertical"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Suggestion Insert -->
+                <div class="flex gap-6 relative mb-8">
+                     <div class="w-16"></div>
+                     <div class="w-8 flex flex-col items-center">
+                         <div class="w-0.5 h-full border-r-2 border-dotted border-gray-300"></div>
+                     </div>
+                     <div class="flex-1">
+                         <div class="border-2 border-dashed border-sage bg-sage/5 p-4 rounded-sm flex items-center justify-between group cursor-pointer hover:bg-sage/10 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-sage text-white w-8 h-8 rounded-full flex items-center justify-center">
+                                    <i class="ph-bold ph-magic-wand"></i>
+                                </div>
+                                <div>
+                                    <p class="font-mono text-xs font-bold text-sage uppercase">AI Suggestion</p>
+                                    <p class="font-serif text-ink font-bold">Lunch at Swanton Berry Farm?</p>
+                                    <p class="text-[10px] text-gray-500 font-mono">Top-rated organic farm stand on your route.</p>
+                                </div>
+                            </div>
+                            <button class="bg-white border border-sage text-sage px-3 py-1 font-mono text-xs font-bold shadow-sm hover:bg-sage hover:text-white transition-colors">Apply</button>
+                         </div>
+                     </div>
+                </div>
+
+                <!-- 3. Food Stop -->
+                <div class="flex gap-6 relative group">
+                    <div class="w-16 text-right pt-4 shrink-0">
+                        <span class="font-mono font-bold text-sm text-ink block">12:30</span>
+                        <span class="font-mono text-[10px] text-gray-500 block">PM</span>
+                    </div>
+                    <div class="flex flex-col items-center shrink-0 w-8">
+                        <div class="w-8 h-8 bg-white border-2 border-ink rounded-full mt-2 relative z-10 flex items-center justify-center shadow-sm">
+                            <i class="ph-fill ph-hamburger text-rust"></i>
+                        </div>
+                       <div class="w-0.5 flex-1 bg-gray-300 border-r-2 border-dotted border-gray-400"></div>
+                    </div>
+                    <div class="flex-1 pb-8">
+                        <div class="paper-card p-4 rounded-sm hover:shadow-md transition-shadow cursor-pointer relative group/card">
+                            <div class="flex justify-between">
+                                <h3 class="font-serif font-bold text-lg">Whale Jumper Cafe</h3>
+                                <span class="font-mono text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-600">Lunch • 1h</span>
+                            </div>
+                            <p class="font-hand text-rust text-xl mt-2 -rotate-1">"Apparently best pies in town"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Button: Add Item -->
+                <div class="flex gap-6 relative">
+                     <div class="w-16"></div>
+                     <div class="w-8 flex justify-center">
+                         <div class="w-0.5 h-8 bg-gray-300 border-r-2 border-dotted border-gray-400"></div>
+                     </div>
+                     <div class="flex-1">
+                         <button class="w-full border-2 border-dashed border-gray-300 py-3 rounded-sm font-mono text-xs font-bold text-gray-400 uppercase hover:border-ink hover:text-ink transition-all flex items-center justify-center gap-2">
+                             <i class="ph-bold ph-plus-circle"></i> Add Stop or Activity
+                         </button>
+                     </div>
+                </div>
+                
+                <!-- Spacer -->
+                <div class="h-20"></div>
+            </div>
+        </section>
+
+        <!-- === RIGHT: STICKY MAP === -->
+        <aside class="w-[30%] bg-[#e5e5e5] border-l border-ink/10 relative hidden xl:block z-20">
+             <!-- Interactive Map Elements -->
+             <div class="absolute inset-0 map-container">
+                 <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover">
+             </div>
+             
+             <!-- Map Overlay UI -->
+             <div class="absolute top-4 right-4 bg-white/90 backdrop-blur border border-ink/10 p-2 rounded shadow-sm text-right">
+                 <p class="font-mono text-[10px] uppercase font-bold text-gray-500">Day 1 Route</p>
+                 <p class="font-serif font-bold text-ink">94 Miles</p>
+             </div>
+
+             <!-- Markers (Simulated) -->
+             <div class="absolute top-1/4 left-1/3">
+                 <div class="w-6 h-6 bg-rust border-2 border-white rounded-full shadow-lg flex items-center justify-center text-white text-[10px] font-bold">1</div>
+                 <!-- Tooltip -->
+                 <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-ink text-white text-[10px] px-2 py-1 rounded whitespace-nowrap hidden group-hover:block">Shark Fin Cove</div>
+             </div>
+
+             <div class="absolute top-1/2 left-1/2">
+                 <div class="w-6 h-6 bg-rust border-2 border-white rounded-full shadow-lg flex items-center justify-center text-white text-[10px] font-bold">2</div>
+             </div>
+
+             <!-- Map Controls -->
+             <div class="absolute bottom-4 right-4 flex flex-col gap-2">
+                 <button class="bg-white w-8 h-8 flex items-center justify-center border border-gray-300 shadow-sm hover:border-ink"><i class="ph-bold ph-plus"></i></button>
+                 <button class="bg-white w-8 h-8 flex items-center justify-center border border-gray-300 shadow-sm hover:border-ink"><i class="ph-bold ph-minus"></i></button>
+             </div>
+        </aside>
+
+    </main>
+</body>
+</html>

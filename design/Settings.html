@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadDoggs | Traveller Profile</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#EAE7DC',
+                        ink: '#232323',
+                        rust: '#C8553D',
+                        sage: '#8E9C6D',
+                        sand: '#D8C3A5',
+                        alert: '#BC4B51',
+                    },
+                    fontFamily: {
+                        serif: ['Fraunces', 'serif'],
+                        mono: ['Space Mono', 'monospace'],
+                        hand: ['Reenie Beanie', 'cursive'],
+                    },
+                    backgroundImage: {
+                        'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
+                        'paper-texture': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                    },
+                    boxShadow: {
+                        'rough': '4px 4px 0px 0px #232323',
+                        'rough-sm': '2px 2px 0px 0px #232323',
+                        'rough-xs': '1px 1px 0px 0px #232323',
+                        'paper-floating': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0,0,0,0.1)',
+                    },
+                    rotate: {
+                        'neg-1': '-1deg',
+                        '1': '1deg',
+                        '2': '2deg',
+                        'neg-2': '-2deg',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Global Texture */
+        body {
+            background-color: #EAE7DC;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            overflow-x: hidden;
+        }
+        
+        .noise-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #232323; border-radius: 4px; }
+
+        /* Tape Effect */
+        .tape {
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            backdrop-filter: blur(1px);
+            position: absolute;
+            z-index: 20;
+        }
+        
+        /* Custom Checkbox/Radio styling */
+        .input-hidden { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #C8553D;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #C8553D;
+        }
+        
+        /* Handwritten Highlights */
+        .highlight-marker {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background-color: #D8C3A5;
+            opacity: 0.5;
+            z-index: -1;
+            transform: skew(-10deg) rotate(-1deg);
+        }
+
+        /* Smooth Anchor Scroll */
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="text-ink antialiased min-h-screen flex flex-col">
+    <div class="noise-layer"></div>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="h-16 bg-[#EAE7DC]/90 backdrop-blur-sm border-b border-ink/10 flex items-center justify-between px-6 z-50 fixed top-0 w-full shadow-sm">
+        <div class="flex items-center gap-4">
+             <a href="#" class="flex items-center gap-2 group" rel="nofollow">
+                <div class="w-8 h-8 bg-ink text-paper rounded-full flex items-center justify-center border border-ink">
+                    <i class="ph-fill ph-user"></i>
+                </div>
+                <span class="text-ink font-serif font-bold text-lg">My Dossier</span>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button class="text-sm font-mono font-bold text-gray-500 hover:text-ink transition-colors">Dashboard</button>
+            <div class="h-4 w-px bg-gray-300"></div>
+            <button class="w-8 h-8 rounded-full overflow-hidden border border-ink/20 hover:border-ink transition-colors">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="User Avatar" class="w-full h-full object-cover">
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= MAIN LAYOUT ================= -->
+    <main class="flex-grow pt-24 px-4 pb-12 max-w-6xl mx-auto w-full flex gap-8 items-start">
+
+        <!-- === SIDEBAR NAVIGATION (Sticky) === -->
+        <nav class="hidden md:block w-64 shrink-0 sticky top-28 bg-[#fcfcf9] p-4 border border-ink/10 shadow-rough-sm rotate-neg-1 rounded-sm">
+            <div class="tape w-24 h-6 -top-3 left-1/2 -translate-x-1/2 -rotate-1"></div>
+            
+            <div class="space-y-1">
+                <a href="#identity" class="block w-full text-left px-3 py-2 rounded-sm bg-ink text-paper font-mono text-xs font-bold uppercase transition-all shadow-rough-xs translate-x-[2px] translate-y-[2px]" rel="nofollow">
+                    01. Identity
+                </a>
+                <a href="#travel-dna" class="block w-full text-left px-3 py-2 rounded-sm text-gray-500 hover:bg-gray-100 font-mono text-xs font-bold uppercase transition-all" rel="nofollow">
+                    02. Travel DNA
+                </a>
+                <a href="#constraints" class="block w-full text-left px-3 py-2 rounded-sm text-gray-500 hover:bg-gray-100 font-mono text-xs font-bold uppercase transition-all" rel="nofollow">
+                    03. The Rig & Road
+                </a>
+                <a href="#ai-brain" class="block w-full text-left px-3 py-2 rounded-sm text-gray-500 hover:bg-gray-100 font-mono text-xs font-bold uppercase transition-all" rel="nofollow">
+                    04. AI Co-Pilot
+                </a>
+                <a href="#comms" class="block w-full text-left px-3 py-2 rounded-sm text-gray-500 hover:bg-gray-100 font-mono text-xs font-bold uppercase transition-all" rel="nofollow">
+                    05. Notifications
+                </a>
+                <a href="#privacy" class="block w-full text-left px-3 py-2 rounded-sm text-gray-500 hover:bg-gray-100 font-mono text-xs font-bold uppercase transition-all" rel="nofollow">
+                    06. Privacy & Data
+                </a>
+            </div>
+
+            <!-- Profile Completion Widget -->
+            <div class="mt-8 pt-6 border-t border-dashed border-gray-300 text-center">
+                <div class="relative w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+                    <svg class="transform -rotate-90 w-12 h-12">
+                        <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="3" fill="none" class="text-gray-200" />
+                        <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="3" fill="none" class="text-sage" stroke-dasharray="113" stroke-dashoffset="20" />
+                    </svg>
+                    <span class="absolute text-[10px] font-mono font-bold text-ink">85%</span>
+                </div>
+                <p class="font-hand text-lg leading-none text-gray-600">Almost ready to roll!</p>
+            </div>
+        </nav>
+
+        <!-- === CONTENT AREA === -->
+        <div class="flex-1 space-y-10 min-w-0">
+
+            <!-- 01. IDENTITY -->
+            <section id="identity" class="relative bg-white border border-gray-200 p-8 shadow-paper-floating rounded-sm scroll-mt-28">
+                <!-- Header -->
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                         <h2 class="font-serif font-black text-3xl">Identity</h2>
+                         <p class="font-mono text-xs text-gray-400 uppercase mt-1">Who you are to the world</p>
+                    </div>
+                    <button class="text-xs font-mono font-bold text-rust hover:underline">Edit Auth Methods</button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-8 items-start">
+                    <!-- Avatar Area -->
+                    <div class="relative shrink-0 group cursor-pointer">
+                        <div class="w-32 h-32 bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center rotate-neg-2 group-hover:border-ink transition-colors bg-white p-2 shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Avatar" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                        </div>
+                        <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-ink text-white px-2 py-1 text-[9px] font-mono uppercase rounded-sm opacity-0 group-hover:opacity-100 transition-opacity">Change</div>
+                        <!-- Tape -->
+                        <div class="tape w-16 h-4 -top-3 left-8 rotate-3"></div>
+                    </div>
+
+                    <!-- Fields -->
+                    <div class="flex-1 space-y-5 w-full">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-mono uppercase font-bold text-gray-500">First Name</label>
+                                <input type="text" value="Sarah" class="w-full bg-paper/50 border-b-2 border-gray-300 focus:border-rust outline-none px-2 py-1 font-serif text-lg text-ink font-bold transition-colors" placeholder="First Name">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-mono uppercase font-bold text-gray-500">Last Name</label>
+                                <input type="text" value="Jenkins" class="w-full bg-paper/50 border-b-2 border-gray-300 focus:border-rust outline-none px-2 py-1 font-serif text-lg text-ink font-bold transition-colors" placeholder="Last Name">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-mono uppercase font-bold text-gray-500">Home Base</label>
+                            <div class="relative">
+                                <i class="ph-bold ph-map-pin absolute left-0 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" value="Austin, TX, USA" class="w-full bg-paper/50 border-b-2 border-gray-300 focus:border-rust outline-none pl-6 pr-2 py-1 font-mono text-sm text-ink transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1 relative">
+                            <label class="block text-[10px] font-mono uppercase font-bold text-gray-500">Traveller Bio (Internal Note)</label>
+                            <textarea class="w-full bg-yellow-50 border border-yellow-200 rounded-sm p-3 font-hand text-xl text-gray-700 focus:border-yellow-400 outline-none resize-none" rows="2">We usually travel with 2 huskies, so AC is a must!</textarea>
+                            <i class="ph-bold ph-pencil-simple absolute right-2 bottom-2 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 02. TRAVEL DNA -->
+            <section id="travel-dna" class="relative bg-white border border-gray-200 p-8 shadow-paper-floating rounded-sm scroll-mt-28">
+                <!-- Red Stamp -->
+                <div class="absolute top-8 right-8 border-2 border-alert text-alert p-2 rounded-sm rotate-12 opacity-80 pointer-events-none">
+                    <span class="block text-[10px] font-mono uppercase font-bold leading-none">Status</span>
+                    <span class="block text-xl font-black font-sans uppercase leading-none tracking-widest">Explorer</span>
+                </div>
+
+                <div class="mb-8">
+                     <h2 class="font-serif font-black text-3xl">Travel DNA</h2>
+                     <p class="font-mono text-xs text-gray-400 uppercase mt-1">Default settings for new trip plans</p>
+                </div>
+
+                <!-- Type & Party Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 border-b border-dashed border-gray-300 pb-8">
+                    <!-- Party Size -->
+                    <div>
+                        <h3 class="font-mono text-xs font-bold uppercase bg-gray-100 inline-block px-2 py-0.5 rounded-sm mb-4">Typical Party</h3>
+                        <div class="flex items-center gap-4">
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="text-2xl font-serif font-bold">2</span>
+                                <span class="text-[10px] text-gray-500 font-mono uppercase">Adults</span>
+                            </div>
+                            <div class="bg-gray-200 w-px h-8"></div>
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="text-2xl font-serif font-bold text-gray-400">0</span>
+                                <span class="text-[10px] text-gray-500 font-mono uppercase">Kids</span>
+                            </div>
+                            <div class="bg-gray-200 w-px h-8"></div>
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="text-2xl font-serif font-bold">2</span>
+                                <span class="text-[10px] text-gray-500 font-mono uppercase">Pets</span>
+                            </div>
+                             <button class="ml-4 w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-ink hover:text-white transition-colors text-xs"><i class="ph-bold ph-pencil"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Lodging Prefs -->
+                    <div>
+                        <h3 class="font-mono text-xs font-bold uppercase bg-gray-100 inline-block px-2 py-0.5 rounded-sm mb-4">Lodging Vibe</h3>
+                        <div class="flex flex-wrap gap-2">
+                             <label class="cursor-pointer">
+                                <input type="checkbox" class="input-hidden peer" checked>
+                                <span class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-mono text-gray-500 peer-checked:bg-ink peer-checked:text-white peer-checked:border-ink transition-all hover:bg-gray-50">Hotel</span>
+                            </label>
+                             <label class="cursor-pointer">
+                                <input type="checkbox" class="input-hidden peer">
+                                <span class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-mono text-gray-500 peer-checked:bg-ink peer-checked:text-white peer-checked:border-ink transition-all hover:bg-gray-50">Motel</span>
+                            </label>
+                             <label class="cursor-pointer">
+                                <input type="checkbox" class="input-hidden peer" checked>
+                                <span class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-mono text-gray-500 peer-checked:bg-ink peer-checked:text-white peer-checked:border-ink transition-all hover:bg-gray-50">VRBO/Airbnb</span>
+                            </label>
+                             <label class="cursor-pointer">
+                                <input type="checkbox" class="input-hidden peer" checked>
+                                <span class="px-3 py-1.5 border border-gray-300 rounded-full text-xs font-mono text-gray-500 peer-checked:bg-ink peer-checked:text-white peer-checked:border-ink transition-all hover:bg-gray-50">Campground</span>
+                            </label>
+                        </div>
+                        <div class="mt-3 flex items-center gap-2">
+                            <span class="text-[10px] font-mono text-gray-500 uppercase">Budget:</span>
+                            <span class="text-xs font-bold font-serif text-ink">$$ - $$$</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interests -->
+                <div class="space-y-4">
+                     <h3 class="font-mono text-xs font-bold uppercase bg-gray-100 inline-block px-2 py-0.5 rounded-sm">Trip Priorities</h3>
+                     <div class="p-4 bg-gray-50 border border-gray-200 rounded-sm relative">
+                         <div class="tape w-12 h-4 -top-2 left-4 rotate-1"></div>
+                         
+                         <!-- Tag Cloud -->
+                         <div class="flex flex-wrap gap-2">
+                            <!-- Selected -->
+                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-sage/20 border border-sage text-sage text-xs font-bold font-mono rounded-sm cursor-pointer hover:bg-sage/30">
+                                <i class="ph-fill ph-plant"></i> Nature
+                            </span>
+                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-rust/10 border border-rust text-rust text-xs font-bold font-mono rounded-sm cursor-pointer hover:bg-rust/20">
+                                <i class="ph-fill ph-paw-print"></i> Dog Friendly
+                            </span>
+                             <span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 border border-blue-300 text-blue-800 text-xs font-bold font-mono rounded-sm cursor-pointer hover:bg-blue-200">
+                                <i class="ph-fill ph-camera"></i> Scenic
+                            </span>
+                             <span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-mono rounded-sm cursor-pointer opacity-60 hover:opacity-100">
+                                <i class="ph-bold ph-martini"></i> Nightlife
+                            </span>
+                             <span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 border border-gray-200 text-gray-500 text-xs font-mono rounded-sm cursor-pointer opacity-60 hover:opacity-100">
+                                <i class="ph-bold ph-museum"></i> Museums
+                            </span>
+                             <span class="inline-flex items-center gap-1 px-2 py-1 px-2 py-1 bg-white border border-dashed border-gray-400 text-gray-400 text-xs font-mono rounded-sm cursor-pointer hover:border-ink hover:text-ink">
+                                + Add Interest
+                            </span>
+                         </div>
+                     </div>
+                </div>
+            </section>
+
+             <!-- 03. RIG & ROAD -->
+            <section id="constraints" class="relative bg-white border border-gray-200 p-8 shadow-paper-floating rounded-sm scroll-mt-28">
+                <div class="mb-6">
+                     <h2 class="font-serif font-black text-3xl">The Rig & Road</h2>
+                     <p class="font-mono text-xs text-gray-400 uppercase mt-1">Driving constraints and vehicle specs</p>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <!-- Vehicle Card -->
+                    <div class="bg-[#f2f0e9] border border-gray-300 p-4 rounded-sm flex gap-4 items-center">
+                        <div class="w-16 h-16 bg-white rounded-full border border-gray-300 flex items-center justify-center shrink-0">
+                            <i class="ph-duotone ph-car text-3xl text-gray-500"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold font-serif text-lg">Subaru Outback</h4>
+                            <p class="text-xs font-mono text-gray-500">Gas • AWD • Roof Rack</p>
+                        </div>
+                        <button class="px-3 py-1 bg-white border border-gray-300 text-xs font-mono uppercase font-bold hover:border-ink transition-colors rounded-sm">Edit</button>
+                    </div>
+
+                    <!-- Driving Pace -->
+                    <div>
+                        <div class="flex justify-between items-end mb-2">
+                             <label class="text-[10px] font-mono uppercase font-bold text-gray-500">Max Daily Drive</label>
+                             <span class="text-xl font-serif font-bold text-rust">6 hrs</span>
+                        </div>
+                        <!-- Custom Range Slider Visual -->
+                        <div class="h-2 bg-gray-200 rounded-full relative">
+                            <div class="absolute top-0 left-0 h-full bg-rust rounded-full" style="width: 60%;"></div>
+                            <div class="absolute top-1/2 -translate-y-1/2 left-[60%] w-4 h-4 bg-white border-2 border-rust rounded-full hover:scale-110 cursor-col-resize shadow-sm"></div>
+                        </div>
+                        <div class="flex justify-between mt-1 text-[10px] font-mono text-gray-400">
+                            <span>2 hrs</span>
+                            <span>12 hrs</span>
+                        </div>
+                    </div>
+
+                    <!-- Road Restrictions -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <div class="w-4 h-4 border border-gray-400 rounded-sm flex items-center justify-center bg-white transition-colors peer-checked:bg-ink peer-checked:border-ink">
+                                <input type="checkbox" class="hidden peer" checked>
+                                <i class="ph-bold ph-check text-white text-[10px] hidden peer-checked:block"></i>
+                            </div>
+                            <span class="text-xs font-mono">Avoid Tools</span>
+                        </label>
+                         <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <div class="w-4 h-4 border border-gray-400 rounded-sm flex items-center justify-center bg-white transition-colors">
+                                <input type="checkbox" class="hidden peer">
+                                <i class="ph-bold ph-check text-white text-[10px] hidden peer-checked:block"></i>
+                            </div>
+                            <span class="text-xs font-mono">Avoid Dirt Roads</span>
+                        </label>
+                         <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <div class="w-4 h-4 border border-gray-400 rounded-sm flex items-center justify-center bg-white transition-colors">
+                                <input type="checkbox" class="hidden peer">
+                                <i class="ph-bold ph-check text-white text-[10px] hidden peer-checked:block"></i>
+                            </div>
+                            <span class="text-xs font-mono">Avoid Highways</span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+             <!-- 04. AI BRAIN -->
+             <section id="ai-brain" class="relative bg-ink text-paper p-8 shadow-paper-floating rounded-sm scroll-mt-28 overflow-hidden">
+                <!-- BG Noise specific for dark section -->
+                <div class="absolute inset-0 bg-[#232323] opacity-100 z-0"></div>
+                <div class="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-0"></div>
+
+                <div class="relative z-10 flex gap-6">
+                    <div class="hidden sm:block pt-2">
+                        <i class="ph-duotone ph-brain text-5xl text-rust"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="mb-6">
+                            <h2 class="font-serif font-black text-3xl">AI Co-Pilot</h2>
+                            <p class="font-mono text-xs text-gray-400 uppercase mt-1">Personalization Logic & Memory</p>
+                        </div>
+
+                        <div class="space-y-6">
+                            <!-- Toggle Item -->
+                            <div class="flex items-start justify-between">
+                                <div class="pr-4">
+                                    <h4 class="font-bold font-serif text-base text-paper">Use Past Trips</h4>
+                                    <p class="text-xs font-mono text-gray-400 mt-1">Allow AI to learn from where you've actually stopped and stayed.</p>
+                                </div>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="toggle1" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-gray-600 appearance-none cursor-pointer checked:right-0 checked:border-rust"/>
+                                    <label for="toggle1" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-700 cursor-pointer border border-gray-600 checked:bg-rust"></label>
+                                </div>
+                            </div>
+
+                             <!-- Toggle Item -->
+                            <div class="flex items-start justify-between">
+                                <div class="pr-4">
+                                    <h4 class="font-bold font-serif text-base text-paper">Transparency Mode</h4>
+                                    <p class="text-xs font-mono text-gray-400 mt-1">Show "Why did you suggest this?" links on every recommendation.</p>
+                                </div>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="toggle2" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-gray-600 appearance-none cursor-pointer checked:right-0 checked:border-rust" checked/>
+                                    <label for="toggle2" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-700 cursor-pointer border border-gray-600 checked:bg-rust"></label>
+                                </div>
+                            </div>
+
+                             <div class="mt-4 pt-4 border-t border-gray-700/50 flex justify-between items-center">
+                                 <span class="text-[10px] font-mono text-gray-500 uppercase">Memory usage: 45kb</span>
+                                 <button class="text-[10px] font-mono font-bold text-alert hover:text-red-400 uppercase tracking-wider">Reset AI Memory</button>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 05. NOTIFICATIONS -->
+             <section id="comms" class="relative bg-white border border-gray-200 p-8 shadow-paper-floating rounded-sm scroll-mt-28">
+                <div class="mb-6">
+                     <h2 class="font-serif font-black text-3xl">Notifications</h2>
+                     <p class="font-mono text-xs text-gray-400 uppercase mt-1">How we bug you</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-sm">
+                        <div class="flex items-center gap-3">
+                            <i class="ph-bold ph-envelope-simple text-gray-400 text-lg"></i>
+                            <div>
+                                <span class="block text-sm font-bold font-serif">Email Digests</span>
+                                <span class="block text-[10px] text-gray-500 font-mono">Weekly summaries & trip suggestions</span>
+                            </div>
+                        </div>
+                        <select class="bg-white border border-gray-300 text-xs font-mono rounded-sm px-2 py-1 outline-none text-ink">
+                            <option>Instant</option>
+                            <option selected>Weekly</option>
+                            <option>Never</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-sm">
+                        <div class="flex items-center gap-3">
+                            <i class="ph-bold ph-bell text-gray-400 text-lg"></i>
+                            <div>
+                                <span class="block text-sm font-bold font-serif">Push Alerts</span>
+                                <span class="block text-[10px] text-gray-500 font-mono">Critical updates during active trips</span>
+                            </div>
+                        </div>
+                        <label class="flex items-center cursor-pointer">
+                            <div class="relative">
+                                <input type="checkbox" class="sr-only" checked>
+                                <div class="w-8 h-4 bg-gray-300 rounded-full shadow-inner"></div>
+                                <div class="dot absolute w-4 h-4 bg-white rounded-full shadow -left-1 -top-0 transition transform translate-x-full bg-ink"></div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+             <!-- FOOTER / DATA -->
+             <section id="privacy" class="pt-8 border-t-2 border-dashed border-gray-300">
+                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                     <div class="flex gap-4">
+                         <a href="#" class="text-xs font-mono font-bold text-gray-400 hover:text-ink" rel="nofollow">Export Data (JSON)</a>
+                         <a href="#" class="text-xs font-mono font-bold text-gray-400 hover:text-ink" rel="nofollow">Privacy Policy</a>
+                     </div>
+                     <button class="text-xs font-mono font-bold text-alert hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-sm transition-colors">Delete Account</button>
+                 </div>
+                 
+                 <div class="mt-8 text-center sticky bottom-0 bg-[#EAE7DC]/80 backdrop-blur pb-4 pt-2">
+                     <button class="bg-rust text-white font-mono font-bold uppercase tracking-widest px-8 py-3 rounded-sm shadow-rough hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all border border-ink text-sm">
+                         Save Changes
+                     </button>
+                 </div>
+             </section>
+
+        </div>
+    </main>
+
+</body>
+</html>

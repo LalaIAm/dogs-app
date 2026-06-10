@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadDoggs | Discover Stops</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: '#EAE7DC',
+                        ink: '#232323',
+                        rust: '#C8553D',
+                        sage: '#8E9C6D',
+                        sand: '#D8C3A5',
+                        alert: '#BC4B51',
+                    },
+                    fontFamily: {
+                        serif: ['Fraunces', 'serif'],
+                        mono: ['Space Mono', 'monospace'],
+                        hand: ['Reenie Beanie', 'cursive'],
+                    },
+                    backgroundImage: {
+                        'noise': "url('https://grainy-gradients.vercel.app/noise.svg')",
+                        'paper-texture': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                    },
+                    boxShadow: {
+                        'rough': '4px 4px 0px 0px #232323',
+                        'rough-sm': '2px 2px 0px 0px #232323',
+                        'paper-floating': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0,0,0,0.1)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Global Texture */
+        body {
+            background-color: #EAE7DC;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            overflow: hidden;
+        }
+        
+        .noise-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Map Filters for "Printed" Look */
+        .map-canvas {
+            filter: contrast(1.1) sepia(0.3) saturate(0.8);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #C8553D; border-radius: 4px; }
+
+        /* Tape Effect */
+        .tape {
+            background-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            backdrop-filter: blur(1px);
+            transform: rotate(-2deg);
+            position: absolute;
+            z-index: 20;
+        }
+
+        /* Polaroid Effect */
+        .polaroid {
+            background: white;
+            padding: 6px 6px 20px 6px;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="text-ink antialiased h-screen flex flex-col">
+    <div class="noise-layer"></div>
+
+    <!-- ================= NAVBAR ================= -->
+    <header class="h-16 bg-[#EAE7DC] border-b border-ink/10 flex items-center justify-between px-4 z-40 relative shadow-sm shrink-0">
+        <div class="flex items-center gap-4">
+             <a href="#" class="flex items-center gap-2 group" rel="nofollow">
+                <div class="w-8 h-8 bg-ink text-paper rounded-full flex items-center justify-center border border-ink">
+                    <i class="ph-fill ph-dog"></i>
+                </div>
+                <!-- Breadcrumbs -->
+                <div class="flex items-center text-sm font-mono font-bold uppercase gap-2">
+                    <span class="text-gray-400 hover:text-ink">Edit Trip</span>
+                    <i class="ph-bold ph-caret-right text-xs text-gray-300"></i>
+                    <span class="text-ink border-b-2 border-rust">Discovery Mode</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Search Global -->
+            <div class="relative hidden lg:block">
+                <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" placeholder="Search places, tags..." class="bg-white/50 border border-gray-300 rounded-full pl-9 pr-4 py-1.5 text-xs font-mono w-64 focus:border-ink focus:bg-white outline-none transition-all">
+            </div>
+            
+            <button class="w-8 h-8 bg-ink text-paper rounded-full flex items-center justify-center hover:bg-rust transition-colors">
+                <i class="ph-bold ph-x"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ================= MAIN WORKSPACE ================= -->
+    <div class="flex-grow flex overflow-hidden relative">
+        
+        <!-- === SIDEBAR: DISCOVERY FILTERS & RESULTS === -->
+        <aside class="w-[450px] bg-[#fcfcf9] border-r border-ink/10 flex flex-col z-30 shadow-xl relative shrink-0">
+            
+            <!-- Filters Header -->
+            <div class="p-5 border-b border-ink/5 bg-[#EAE7DC]">
+                <h1 class="font-serif font-black text-2xl mb-1">Explore Route</h1>
+                <p class="font-mono text-[10px] text-gray-500 uppercase tracking-wider mb-4">Finding gems within 10 miles of path</p>
+                
+                <!-- Filter Pills -->
+                <div class="flex flex-wrap gap-2">
+                    <button class="flex items-center gap-1.5 px-3 py-1.5 bg-rust text-white rounded-full text-[10px] font-mono font-bold shadow-rough-sm hover:translate-y-[1px] hover:shadow-none transition-all border border-ink">
+                        <i class="ph-fill ph-fork-knife"></i> Food
+                    </button>
+                    <button class="flex items-center gap-1.5 px-3 py-1.5 bg-white text-ink rounded-full text-[10px] font-mono font-bold border border-gray-300 hover:border-ink hover:bg-gray-50 transition-all">
+                        <i class="ph-fill ph-camera"></i> Scenic
+                    </button>
+                    <button class="flex items-center gap-1.5 px-3 py-1.5 bg-white text-ink rounded-full text-[10px] font-mono font-bold border border-gray-300 hover:border-ink hover:bg-gray-50 transition-all">
+                        <i class="ph-fill ph-tent"></i> Camp
+                    </button>
+                    <button class="flex items-center gap-1.5 px-3 py-1.5 bg-white text-ink rounded-full text-[10px] font-mono font-bold border border-gray-300 hover:border-ink hover:bg-gray-50 transition-all">
+                        <i class="ph-fill ph-plug"></i> EV Charge
+                    </button>
+                     <button class="flex items-center gap-1.5 px-3 py-1.5 bg-white text-ink rounded-full text-[10px] font-mono font-bold border border-gray-300 hover:border-ink hover:bg-gray-50 transition-all">
+                        <i class="ph-fill ph-sliders-horizontal"></i> Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- List Results -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-[#fcfcf9]">
+                
+                <!-- Result Card 1 (Active/Selected) -->
+                <div class="bg-white border-2 border-rust shadow-rough p-3 rounded-sm flex gap-3 relative cursor-pointer group">
+                    <div class="absolute -right-1 -top-1 bg-rust text-white text-[9px] font-mono uppercase px-2 py-0.5 z-10">Selected</div>
+                    <!-- Image Area -->
+                    <div class="w-24 h-24 shrink-0 relative polaroid rotate-[-1deg]">
+                        <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-serif font-bold text-lg leading-tight truncate">Deetjen's Big Sur Inn</h3>
+                            <span class="text-xs font-mono font-bold text-sage">$$$</span>
+                        </div>
+                        <div class="flex gap-1 items-center mt-1 mb-2">
+                             <div class="flex text-yellow-500 text-[10px]"><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star-half"></i></div>
+                             <span class="text-[10px] text-gray-400 font-mono">(482)</span>
+                        </div>
+                        <p class="text-[11px] text-gray-600 line-clamp-2 leading-relaxed">Historic rustic lodging tucked into the redwoods. Famous for breakfast.</p>
+                        
+                        <div class="mt-3 flex items-center justify-between">
+                            <span class="inline-flex items-center gap-1 text-[10px] font-mono text-rust bg-rust/10 px-2 py-0.5 rounded">
+                                <i class="ph-bold ph-arrow-bend-right-up"></i> +5m detour
+                            </span>
+                            <button class="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-ink hover:text-white transition-colors"><i class="ph-bold ph-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Card 2 -->
+                <div class="bg-white border border-gray-200 hover:border-ink shadow-sm hover:shadow-md p-3 rounded-sm flex gap-3 relative cursor-pointer transition-all">
+                    <div class="w-24 h-24 shrink-0 relative bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1520263115673-611416cd274a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 bg-black/10"></div>
+                        <i class="ph-fill ph-map-pin text-white drop-shadow-md text-2xl absolute"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                         <h3 class="font-serif font-bold text-lg leading-tight text-gray-800">McWay Falls</h3>
+                         <div class="flex gap-2 mt-1 mb-1">
+                             <span class="text-[10px] font-mono uppercase bg-gray-100 text-gray-500 px-1 rounded">Viewpoint</span>
+                             <span class="text-[10px] font-mono uppercase bg-green-100 text-green-700 px-1 rounded">Open</span>
+                         </div>
+                         <p class="text-[11px] text-gray-500 line-clamp-2">Iconic 80-foot waterfall that flows directly into the ocean.</p>
+                         <div class="mt-3 flex items-center justify-between">
+                            <span class="inline-flex items-center gap-1 text-[10px] font-mono text-gray-500">
+                                <i class="ph-bold ph-navigation-arrow"></i> On route
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Card 3 (AI Suggestion) -->
+                <div class="bg-sage/10 border-2 border-dashed border-sage p-3 rounded-sm relative cursor-pointer hover:bg-sage/20 transition-colors">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="ph-fill ph-sparkle text-sage"></i>
+                        <span class="text-[10px] font-mono font-bold uppercase text-sage">For you & your dog</span>
+                    </div>
+                    <div class="flex gap-3">
+                         <div class="w-16 h-16 shrink-0 bg-white rounded-full overflow-hidden border border-sage">
+                             <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255db?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover">
+                         </div>
+                         <div>
+                             <h3 class="font-serif font-bold text-base text-ink">Pfeiffer Beach</h3>
+                             <p class="text-[11px] text-gray-600 leading-snug">Off-leash friendly on the north end. Purple sand interesting geological feature.</p>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Empty Space for scroll -->
+                <div class="h-24"></div>
+            </div>
+        </aside>
+
+        <!-- === MAP CANVAS === -->
+        <section class="flex-1 relative bg-[#e5e5e5] overflow-hidden">
+            <!-- Map Filters -->
+            <div class="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur border border-ink/10 p-1.5 rounded-sm shadow-sm flex flex-col gap-2">
+                 <button class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-sm"><i class="ph-bold ph-plus"></i></button>
+                 <button class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-sm"><i class="ph-bold ph-minus"></i></button>
+            </div>
+
+            <!-- Map Image -->
+            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80" 
+                 class="w-full h-full object-cover map-canvas opacity-80 pointer-events-none">
+
+            <!-- Route Line -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none z-0 mix-blend-multiply opacity-70">
+                <path d="M -100 200 Q 300 400 500 300 T 1200 400" stroke="#232323" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="10,10" />
+            </svg>
+
+            <!-- POI Markers -->
+            <!-- Marker 1 (Deetjens - Selected) -->
+            <div class="absolute top-[280px] left-[480px] group cursor-pointer z-20">
+                <div class="w-10 h-10 -ml-5 -mt-10 bg-rust text-white flex items-center justify-center rounded-full shadow-lg border-2 border-white animate-float">
+                    <i class="ph-fill ph-fork-knife text-lg"></i>
+                </div>
+                <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-ink text-white text-[10px] font-mono px-2 py-1 rounded shadow-lg whitespace-nowrap">
+                    Deetjen's Inn
+                </div>
+            </div>
+
+            <!-- Marker 2 (McWay) -->
+            <div class="absolute top-[350px] left-[520px] group cursor-pointer hover:z-30 transition-all hover:scale-110">
+                <div class="w-8 h-8 -ml-4 -mt-8 bg-white text-ink flex items-center justify-center rounded-full shadow-md border border-gray-400">
+                    <i class="ph-fill ph-camera text-base"></i>
+                </div>
+            </div>
+
+            <!-- Marker 3 (Pfeiffer - Suggestion) -->
+            <div class="absolute top-[290px] left-[420px] group cursor-pointer hover:z-30">
+                <div class="w-8 h-8 -ml-4 -mt-8 bg-sage text-white flex items-center justify-center rounded-full shadow-md border-2 border-white">
+                    <i class="ph-fill ph-sparkle text-base"></i>
+                </div>
+            </div>
+
+            <!-- === DETAILS PANEL (SLIDE OVERS) === -->
+            <!-- Positioned absolutely on the right side of map -->
+            <div class="absolute top-4 right-4 bottom-4 w-[400px] bg-[#fcfcf9] border border-ink shadow-paper-floating z-40 overflow-hidden flex flex-col transform transition-transform duration-300 divide-y divide-gray-200">
+                
+                <!-- Close Button -->
+                <button class="absolute top-2 right-2 z-50 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center hover:bg-ink hover:text-white transition-colors border border-gray-200">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+
+                <!-- Hero Image -->
+                <div class="h-48 w-full bg-gray-200 shrink-0 relative">
+                    <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="absolute bottom-3 left-4 text-white">
+                        <h2 class="font-serif font-bold text-2xl leading-none">Deetjen's Big Sur Inn</h2>
+                        <p class="font-mono text-xs opacity-90 mt-1">Historic Lodge & Restaurant</p>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="p-5 overflow-y-auto flex-1 bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+                    
+                    <!-- Quick Stats -->
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-1">
+                            <i class="ph-fill ph-star text-yellow-500 text-lg"></i>
+                            <span class="font-bold font-serif text-xl">4.7</span>
+                            <span class="text-xs text-gray-500 underline decoration-dotted ml-1">View 482 reviews</span>
+                        </div>
+                        <div class="flex gap-2">
+                             <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 cursor-pointer hover:bg-rust hover:text-white transition-colors" title="Bookmark"><i class="ph-bold ph-bookmark-simple"></i></div>
+                             <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 cursor-pointer hover:bg-rust hover:text-white transition-colors" title="External Link"><i class="ph-bold ph-arrow-square-out"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="font-serif text-sm text-gray-700 leading-relaxed mb-4">
+                        A rustic, quirky collection of buildings nestled in a redwood canyon. The atmosphere is unplugged and romantic. Known for their eggs benedict and historic charm.
+                    </p>
+
+                    <!-- Tags -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="px-2 py-1 bg-gray-100 border border-gray-200 text-[10px] font-mono uppercase text-gray-600 rounded-sm">Romantic</span>
+                        <span class="px-2 py-1 bg-gray-100 border border-gray-200 text-[10px] font-mono uppercase text-gray-600 rounded-sm">Historic</span>
+                        <span class="px-2 py-1 bg-yellow-100 border border-yellow-200 text-[10px] font-mono uppercase text-yellow-800 rounded-sm">No Cell Service</span>
+                    </div>
+
+                    <!-- Practical Details (Field Guide Style) -->
+                    <div class="grid grid-cols-2 gap-4 border-t border-dashed border-gray-300 pt-4 mb-6">
+                        <div>
+                            <span class="block text-[10px] font-mono uppercase text-gray-400 mb-1">Status</span>
+                            <span class="text-xs font-bold font-mono text-green-700 flex items-center gap-1"><i class="ph-fill ph-clock"></i> Open Now</span>
+                            <span class="text-[10px] text-gray-500 block mt-0.5">Closes 9 PM</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-mono uppercase text-gray-400 mb-1">Price</span>
+                            <span class="text-xs font-bold font-mono text-ink">$$$ • Expensive</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-mono uppercase text-gray-400 mb-1">Phone</span>
+                            <span class="text-xs font-bold font-mono text-ink decoration-underline underline">(831) 667-2377</span>
+                        </div>
+                         <div>
+                            <span class="block text-[10px] font-mono uppercase text-gray-400 mb-1">Parking</span>
+                            <span class="text-xs font-bold font-mono text-alert">Limited</span>
+                        </div>
+                    </div>
+
+                    <!-- Social Proof / Tips -->
+                    <div class="bg-paper p-3 rounded-sm border border-gray-200 relative mb-20">
+                        <div class="tape w-16 h-4 -top-2 left-1/2 -translate-x-1/2"></div>
+                        <h4 class="font-mono text-[10px] uppercase font-bold text-gray-500 mb-2">Traveler Tips</h4>
+                        <div class="flex gap-2 items-start">
+                             <img src="https://i.pravatar.cc/100?img=33" class="w-6 h-6 rounded-full grayscale opacity-80">
+                             <div>
+                                 <p class="font-hand text-base leading-4 text-ink">"Parking is super tight for RVs. Park on the road if you're over 20ft!"</p>
+                             </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer / CTA -->
+                <div class="p-4 bg-white border-t border-ink/10 shrink-0">
+                    <div class="mb-3 flex items-center justify-between text-xs font-mono text-gray-500">
+                        <span>Insertion Point:</span>
+                        <select class="bg-gray-100 border-none text-ink font-bold rounded p-1 outline-none cursor-pointer">
+                            <option>After Start (SF)</option>
+                            <option selected>Between Stop 1 & 2</option>
+                            <option>End of Day 1</option>
+                        </select>
+                    </div>
+                    <button class="w-full py-3 bg-rust text-white font-mono font-bold uppercase tracking-widest text-xs shadow-rough hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all border border-ink flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-plus"></i> Add to Trip
+                    </button>
+                    <!-- Collab Context -->
+                    <div class="text-center mt-2">
+                        <span class="text-[9px] font-mono text-gray-400">Collaborators will be notified</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+</body>
+</html>
