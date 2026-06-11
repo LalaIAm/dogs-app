@@ -196,7 +196,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
 - [x] 8. Final checkpoint
   - Ensure all sections render correctly, parallax effects work smoothly, responsive layout adapts properly, and no console errors. Ask the user if questions arise.
 
-- [ ] 9. Set up Cypress testing
+- [x] 9. Set up Cypress testing
   - [x] 9.1 Install and configure Cypress
     - Install cypress as dev dependency: `npm install -D cypress`
     - Create `cypress.config.js` with baseUrl pointing to Vite preview server (`http://localhost:4173`)
@@ -229,7 +229,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test no horizontal overflow on mobile
     - _Requirements: 16.5_
 
-  - [ ] 9.5 Write smoke test
+  - [x] 9.5 Write smoke test
     - Create `cypress/e2e/landing-page/smoke.cy.js`
     - Test page loads without uncaught exceptions
     - Test no console errors
