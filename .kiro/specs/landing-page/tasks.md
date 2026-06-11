@@ -171,8 +171,8 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Right column: nav links grid, social icons, copyright with current year
     - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
-- [ ] 7. Integrate and finalize
-  - [~] 7.1 Create LandingPage.jsx page component
+- [x] 7. Integrate and finalize
+  - [x] 7.1 Create LandingPage.jsx page component
     - Create `src/pages/LandingPage.jsx`
     - Compose all sections in exact order: Navbar, Hero, Manifesto, SmartPoi, SocialProof, Features, TechCapabilities, CTA, FieldNotes, Footer
     - Apply global container styles: `text-ink antialiased overflow-x-hidden selection:bg-rust selection:text-white`
@@ -180,13 +180,13 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Call useParallax hook
     - _Requirements: 2.1, 2.2, 14.4_
 
-  - [~] 7.2 Update App.jsx to render LandingPage
+  - [x] 7.2 Update App.jsx to render LandingPage
     - Import and render LandingPage component
     - Replace current placeholder content with `<LandingPage />` render
     - Ensure clean entry point with no extra wrappers
     - _Requirements: 2.1_
 
-  - [~] 7.3 Responsive design verification and adjustments
+  - [x] 7.3 Responsive design verification and adjustments
     - Verify all grids switch from multi-column to single-column below md (768px)
     - Verify decorative elements hide/resize on mobile
     - Verify hero headline scales from 15vw to 8rem at breakpoint
