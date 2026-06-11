@@ -74,8 +74,8 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Tape decoration, rotation, hover-to-level transition
     - _Requirements: 15.7, 12.3, 12.4_
 
-- [ ] 3. Implement the useParallax hook
-  - [ ] 3.1 Create src/hooks/useParallax.js
+- [x] 3. Implement the useParallax hook
+  - [x] 3.1 Create src/hooks/useParallax.js
     - On mount: attach scroll event listener
     - On scroll: use requestAnimationFrame for throttled updates
     - Query all elements with `[data-speed]` attribute
@@ -86,7 +86,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - On unmount: remove scroll listener, cancel any pending animation frame
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6_
 
-  - [ ] 3.2 Write property tests for useParallax calculations
+  - [x] 3.2 Write property tests for useParallax calculations
     - **Property 1: Parallax Transform Calculation Consistency**
     - For any (scrollY, speed) pair, verify translateY = scrollY _ speed and rotation = scrollY _ 0.01 _ speed _ 10
     - **Property 2: Viewport Culling Correctness**
