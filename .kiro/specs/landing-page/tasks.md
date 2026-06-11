@@ -121,30 +121,35 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Radar: concentric circles, ping animation (3s), "Giant Artichoke" found card with connector
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [~] 5. Checkpoint
+- [x] 5. Checkpoint
   - Ensure all components render correctly, verify parallax hook works with data-speed elements, ask the user if questions arise.
 
 - [ ] 6. Implement section components (Part 2)
-  - [~] 6.1 Create SocialProofSection component
+  - [ ] 6.1 Create SocialProofSection component
+    - Create `src/components/SocialProofSection.jsx`
     - Header: "Word on the street" (hand) + "The Co-Pilot Reports." (serif)
     - Star rating stamp (4.9/5) with rotation that levels on hover
     - 3-column grid of ReviewCard components rendered from reviews data
     - Brand bar with 4 publication names (grayscale, 50% opacity)
     - _Requirements: 8.1, 8.2, 8.3, 8.5_
 
-  - [~] 6.2 Create FeaturesSection component
+  - [ ] 6.2 Create FeaturesSection component
+    - Create `src/components/FeaturesSection.jsx`
     - "Tools for Drift." heading + "Curated Vibes" handwritten accent
     - 2-column grid of FeatureCard components (Route Painter + Pack Planning)
     - Include mock visuals as children content
+    - Import features data from `src/data/landingContent.js`
     - _Requirements: 9.1, 9.2, 9.4_
 
-  - [~] 6.3 Create TechCapabilitiesSection component
+  - [ ] 6.3 Create TechCapabilitiesSection component
+    - Create `src/components/TechCapabilitiesSection.jsx`
     - Dark ink background, white grid overlay (10% opacity)
     - Header: "Under the Hood" + hand-drawn arrow annotation
     - 3-column grid rendering TechFeature components from techFeatures data
     - _Requirements: 10.1, 10.2, 10.4_
 
-  - [~] 6.4 Create CtaSection component
+  - [ ] 6.4 Create CtaSection component
+    - Create `src/components/CtaSection.jsx`
     - Rust background with noise overlay and decorative SVG dashed curve
     - "Limited Beta Access // Vol. 3" badge pill (rotation, hover level)
     - "Don't just drive. Roam." headline
@@ -152,50 +157,54 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Secondary text link
     - _Requirements: 11.1, 11.2, 11.3, 11.4_
 
-  - [~] 6.5 Create FieldNotesSection component
+  - [ ] 6.5 Create FieldNotesSection component
+    - Create `src/components/FieldNotesSection.jsx`
     - "Field Notes" heading with handwritten accent
     - CSS columns masonry layout (1 col mobile, 3 col desktop)
     - Render BlogCard components from blogPosts data
     - _Requirements: 12.1, 12.2_
 
-  - [~] 6.6 Create Footer component
+  - [ ] 6.6 Create Footer component
+    - Create `src/components/Footer.jsx`
     - Dark ink background, rust top border
     - Left column: giant "GO." text, tagline, download button, handwritten note
     - Right column: nav links grid, social icons, copyright with current year
     - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
 - [ ] 7. Integrate and finalize
-  - [~] 7.1 Create LandingPage.jsx page component
+  - [ ] 7.1 Create LandingPage.jsx page component
+    - Create `src/pages/LandingPage.jsx`
     - Compose all sections in exact order: Navbar, Hero, Manifesto, SmartPoi, SocialProof, Features, TechCapabilities, CTA, FieldNotes, Footer
     - Apply global container styles: `text-ink antialiased overflow-x-hidden selection:bg-rust selection:text-white`
     - Render NoiseOverlay
     - Call useParallax hook
     - _Requirements: 2.1, 2.2, 14.4_
 
-  - [~] 7.2 Update App.jsx to render LandingPage
+  - [ ] 7.2 Update App.jsx to render LandingPage
     - Import and render LandingPage component
+    - Replace current placeholder content with `<LandingPage />` render
     - Ensure clean entry point with no extra wrappers
     - _Requirements: 2.1_
 
-  - [~] 7.3 Responsive design verification and adjustments
+  - [ ] 7.3 Responsive design verification and adjustments
     - Verify all grids switch from multi-column to single-column below md (768px)
     - Verify decorative elements hide/resize on mobile
     - Verify hero headline scales from 15vw to 8rem at breakpoint
     - Adjust any overflow or positioning issues
     - _Requirements: 14.1, 14.2, 14.3_
 
-- [~] 8. Final checkpoint
+- [ ] 8. Final checkpoint
   - Ensure all sections render correctly, parallax effects work smoothly, responsive layout adapts properly, and no console errors. Ask the user if questions arise.
 
 - [ ] 9. Set up Cypress testing
-  - [~] 9.1 Install and configure Cypress
+  - [ ] 9.1 Install and configure Cypress
     - Install cypress as dev dependency: `npm install -D cypress`
     - Create `cypress.config.js` with baseUrl pointing to Vite preview server (`http://localhost:4173`)
     - Create `cypress/support/e2e.js` and `cypress/support/commands.js`
     - Add npm scripts: `"cypress:open": "cypress open"`, `"cypress:run": "cypress run"`, `"test:e2e": "npm run build && npx start-server-and-test preview http://localhost:4173 cypress:run"`
     - _Requirements: 16.1_
 
-  - [~] 9.2 Write section rendering tests
+  - [ ] 9.2 Write section rendering tests
     - Create `cypress/e2e/sections.cy.js`
     - Test that all 10 sections are present in the DOM in correct order
     - Test Navbar is fixed and visible
@@ -203,7 +212,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test each section has expected key content
     - _Requirements: 16.2_
 
-  - [~] 9.3 Write parallax and interaction tests
+  - [ ] 9.3 Write parallax and interaction tests
     - Create `cypress/e2e/interactions.cy.js`
     - Test that `data-speed` elements exist
     - Test scroll triggers transform changes on parallax elements
@@ -212,7 +221,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test hover on feature cards changes shadow offset
     - _Requirements: 16.3, 16.4_
 
-  - [~] 9.4 Write responsive layout tests
+  - [ ] 9.4 Write responsive layout tests
     - Create `cypress/e2e/responsive.cy.js`
     - Test mobile viewport (375px): grids are single column
     - Test desktop viewport (1280px): grids are multi-column
@@ -220,7 +229,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test no horizontal overflow on mobile
     - _Requirements: 16.5_
 
-  - [~] 9.5 Write smoke test
+  - [ ] 9.5 Write smoke test
     - Create `cypress/e2e/smoke.cy.js`
     - Test page loads without uncaught exceptions
     - Test no console errors
@@ -228,93 +237,19 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test noise overlay is present with correct z-index
     - _Requirements: 16.6_
 
-- [ ] 10. Set up GitHub Actions CI pipeline
-  - [~] 10.1 Create GitHub Actions workflow
+- [x] 10. Set up GitHub Actions CI pipeline
+  - [x] 10.1 Create GitHub Actions workflow
     - Create `.github/workflows/ci.yml`
     - Trigger on push to `main` and pull requests targeting `main`
     - Node.js setup with dependency caching
     - Install dependencies with `npm ci`, build project with `npm run build`
-    - Start Vite preview server, run Cypress in headless mode
+    - Run unit/property tests, start Vite preview server, run Cypress in headless mode
     - Use `cypress-io/github-action@v6` for running tests
+    - Upload screenshots/videos on failure, coverage report
     - _Requirements: 17.1, 17.2, 17.3, 17.4_
-
-## Task Dependency Graph
-
-```json
-{
-  "waves": [
-    {
-      "name": "Foundation",
-      "tasks": ["1.1", "1.2", "1.3"]
-    },
-    {
-      "name": "Components & Hook",
-      "tasks": [
-        "2.1",
-        "2.2",
-        "2.3",
-        "2.4",
-        "2.5",
-        "2.6",
-        "2.7",
-        "2.8",
-        "3.1",
-        "3.2"
-      ],
-      "dependsOn": ["1.1", "1.2", "1.3"]
-    },
-    {
-      "name": "Sections Part 1",
-      "tasks": ["4.1", "4.2", "4.3", "4.4"],
-      "dependsOn": [
-        "2.1",
-        "2.2",
-        "2.3",
-        "2.4",
-        "2.5",
-        "2.6",
-        "2.7",
-        "2.8",
-        "3.1"
-      ]
-    },
-    {
-      "name": "Checkpoint 1",
-      "tasks": ["5"],
-      "dependsOn": ["4.1", "4.2", "4.3", "4.4"]
-    },
-    {
-      "name": "Sections Part 2",
-      "tasks": ["6.1", "6.2", "6.3", "6.4", "6.5", "6.6"],
-      "dependsOn": ["5"]
-    },
-    {
-      "name": "Integration",
-      "tasks": ["7.1", "7.2", "7.3"],
-      "dependsOn": ["6.1", "6.2", "6.3", "6.4", "6.5", "6.6"]
-    },
-    {
-      "name": "Final Checkpoint",
-      "tasks": ["8"],
-      "dependsOn": ["7.1", "7.2", "7.3"]
-    },
-    {
-      "name": "Testing",
-      "tasks": ["9.1", "9.2", "9.3", "9.4", "9.5"],
-      "dependsOn": ["7.1", "7.2", "7.3"]
-    },
-    {
-      "name": "CI/CD",
-      "tasks": ["10.1"],
-      "dependsOn": ["9.1"]
-    }
-  ]
-}
-```
 
 ## Notes
 
-- Tasks marked with `*` are optional and can be skipped for faster MVP
 - Each task references specific requirements for traceability
 - The project uses React.js with JavaScript (no TypeScript)
 - Tailwind CSS v4 uses the new `@theme` syntax in CSS rather than a JS config file
@@ -322,3 +257,18 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
 - Property tests cover the parallax calculation logic which is the only pure-function domain in this UI-focused project
 - Cypress E2E tests run against the Vite preview server (`http://localhost:4173`) after `npm run build`
 - The CI pipeline uses `cypress-io/github-action@v6` which handles starting the server and running tests
+- Tasks 1–5 and 10 are complete; remaining work is section components (Part 2), page integration, and Cypress setup
+
+## Task Dependency Graph
+
+```json
+{
+  "waves": [
+    { "id": 0, "tasks": ["6.1", "6.2", "6.3", "6.4", "6.5", "6.6"] },
+    { "id": 1, "tasks": ["7.1", "7.2"] },
+    { "id": 2, "tasks": ["7.3"] },
+    { "id": 3, "tasks": ["9.1"] },
+    { "id": 4, "tasks": ["9.2", "9.3", "9.4", "9.5"] }
+  ]
+}
+```
