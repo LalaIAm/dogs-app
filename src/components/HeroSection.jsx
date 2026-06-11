@@ -5,11 +5,11 @@ import { NoteCard } from "./ui/NoteCard";
 export function HeroSection() {
   return (
     <header className="relative min-h-[110vh] pt-32 px-6 overflow-hidden flex flex-col items-center">
-      {/* Floating background text */}
-      <div className="absolute top-1/4 left-10 font-hand text-6xl text-ink/10 -rotate-12 pointer-events-none select-none">
+      {/* Floating background text — hidden on mobile */}
+      <div className="hidden md:block absolute top-1/4 left-10 font-hand text-6xl text-ink/10 -rotate-12 pointer-events-none select-none">
         Are we there yet?
       </div>
-      <div className="absolute bottom-1/4 right-10 font-hand text-6xl text-ink/10 rotate-12 pointer-events-none select-none">
+      <div className="hidden md:block absolute bottom-1/4 right-10 font-hand text-6xl text-ink/10 rotate-12 pointer-events-none select-none">
         No Signal. Good.
       </div>
 

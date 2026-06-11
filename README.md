@@ -55,6 +55,29 @@ npm run preview
 
 Serves the built app at [http://localhost:4173](http://localhost:4173).
 
+## Testing
+
+### End-to-End (Cypress)
+
+Cypress tests run against the Vite preview server on port 4173.
+
+```bash
+# Open Cypress GUI
+npm run cypress:open
+
+# Headless run
+npm run cypress:run
+
+# Full pipeline: build → preview → run tests
+npm run test:e2e
+```
+
+### Unit / Property Tests (Vitest)
+
+```bash
+npm run test
+```
+
 ## Project Structure
 
 ```
@@ -68,6 +91,10 @@ dogs-app/
 │   ├── data/            # Static content/data files
 │   ├── App.jsx          # Root component
 │   └── index.css        # Tailwind v4 entry with @theme tokens
+├── cypress/             # Cypress E2E tests
+│   ├── e2e/             # Test specs
+│   └── support/         # Support files
+├── cypress.config.js    # Cypress config (baseUrl: localhost:4173)
 ├── index.html           # Vite HTML entry point
 ├── vite.config.js       # Vite config
 └── package.json

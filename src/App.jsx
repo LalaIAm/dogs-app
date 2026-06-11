@@ -1,9 +1,7 @@
+import LandingPage from "./pages/LandingPage";
+
 function App() {
-  return (
-    <div>
-      <h1>RoadDoggs</h1>
-    </div>
-  );
+  return <LandingPage />;
 }
 
 export default App;

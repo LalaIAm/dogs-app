@@ -1,11 +1,11 @@
-import { GasPump, CloudWarning, Satellite } from "@phosphor-icons/react";
+import { GasPump, CloudWarning, Broadcast } from "@phosphor-icons/react";
 import { techFeatures } from "../data/landingContent";
 import { TechFeature } from "./ui/TechFeature";
 
 const iconMap = {
   GasPump: <GasPump size={32} />,
   CloudWarning: <CloudWarning size={32} />,
-  Satellite: <Satellite size={32} />,
+  Satellite: <Broadcast size={32} />,
 };
 
 export function TechCapabilitiesSection() {

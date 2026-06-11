@@ -7,9 +7,9 @@ export function SocialProofSection() {
 
   return (
     <section className="py-20 border-b border-ink/10 overflow-hidden relative">
-      {/* Background Scribble */}
+      {/* Background Scribble — hidden on mobile */}
       <div
-        className="absolute -right-20 top-10 opacity-10 pointer-events-none rotate-12 parallax-scroll"
+        className="hidden md:block absolute -right-20 top-10 opacity-10 pointer-events-none rotate-12 parallax-scroll"
         data-speed="0.05"
         aria-hidden="true"
       >

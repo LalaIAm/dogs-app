@@ -60,7 +60,7 @@ function RoutePainterMock() {
 function PackPlanningMock() {
   return (
     <div
-      className="absolute -right-6 top-1/2 -translate-y-1/2 rotate-90 md:rotate-0 parallax-scroll"
+      className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/2 parallax-scroll"
       data-speed="-0.03"
     >
       <span className="font-hand text-2xl text-ink bg-sand px-2">
