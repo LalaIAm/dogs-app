@@ -6,8 +6,8 @@ Create a single GitHub Actions workflow file at `.github/workflows/ci.yml` that 
 
 ## Tasks
 
-- [ ] 1. Create CI workflow file with trigger configuration and environment setup
-  - [ ] 1.1 Create `.github/workflows/ci.yml` with workflow name, trigger config, and job setup
+- [x] 1. Create CI workflow file with trigger configuration and environment setup
+  - [x] 1.1 Create `.github/workflows/ci.yml` with workflow name, trigger config, and job setup
     - Create the workflow file with `name: CI`
     - Configure `on: push` and `on: pull_request` triggers for the `main` branch
     - Define `build-and-test` job with `runs-on: ubuntu-latest`
@@ -15,54 +15,54 @@ Create a single GitHub Actions workflow file at `.github/workflows/ci.yml` that 
     - Add `actions/setup-node@v4` with `node-version: 20` and `cache: 'npm'`
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 9.1_
 
-  - [ ] 1.2 Add Cypress binary caching step
+  - [x] 1.2 Add Cypress binary caching step
     - Add `actions/cache@v4` step to cache `~/.cache/Cypress`
     - Use cache key: `cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}`
     - _Requirements: 9.2, 9.3, 9.4_
 
-  - [ ] 1.3 Add dependency installation step
+  - [x] 1.3 Add dependency installation step
     - Add `npm ci` step after caching is configured
     - Ensure this step runs before any build or test steps
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-- [ ] 2. Add build and test execution steps
-  - [ ] 2.1 Add build verification step
+- [x] 2. Add build and test execution steps
+  - [x] 2.1 Add build verification step
     - Add `npm run build` step after dependency installation
     - Ensure this step completes before E2E tests run
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 2.2 Add Vitest unit and property test step with coverage
+  - [x] 2.2 Add Vitest unit and property test step with coverage
     - Add step running `npm run test -- --coverage --coverage.reporter=lcov --coverage.reporter=text`
     - This produces a `coverage/` directory and text summary in the log
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 7.1, 7.2, 7.3, 7.4_
 
-  - [ ] 2.3 Add Cypress E2E test step using `cypress-io/github-action@v6`
+  - [x] 2.3 Add Cypress E2E test step using `cypress-io/github-action@v6`
     - Configure with `install: false` (dependencies already installed)
     - Set `start: npm run preview` to launch Vite preview server
     - Set `wait-on: 'http://localhost:4173'` with `wait-on-timeout: 60`
     - Use default `browser: electron` for headless execution
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6_
 
-- [ ] 3. Add artifact upload steps with conditional execution
-  - [ ] 3.1 Add failure artifact upload for Cypress screenshots
+- [x] 3. Add artifact upload steps with conditional execution
+  - [x] 3.1 Add failure artifact upload for Cypress screenshots
     - Add `actions/upload-artifact@v4` step with `if: failure()`
     - Upload `cypress/screenshots` with name `cypress-screenshots`
     - Set `retention-days: 7`
     - _Requirements: 6.1, 6.3, 6.4_
 
-  - [ ] 3.2 Add failure artifact upload for Cypress videos
+  - [x] 3.2 Add failure artifact upload for Cypress videos
     - Add `actions/upload-artifact@v4` step with `if: failure()`
     - Upload `cypress/videos` with name `cypress-videos`
     - Set `retention-days: 7`
     - _Requirements: 6.2, 6.3, 6.4_
 
-  - [ ] 3.3 Add coverage report artifact upload
+  - [x] 3.3 Add coverage report artifact upload
     - Add `actions/upload-artifact@v4` step with `if: always()`
     - Upload `coverage/` directory with name `coverage-report`
     - Set `retention-days: 14`
     - _Requirements: 8.1, 8.2, 8.3, 8.5_
 
-- [ ] 4. Final checkpoint
+- [x] 4. Final checkpoint
   - Ensure the workflow YAML is syntactically valid.
   - Verify all steps are ordered correctly: checkout → setup-node → cache → npm ci → build → vitest → cypress → artifacts.
   - Confirm all requirement references are covered.
