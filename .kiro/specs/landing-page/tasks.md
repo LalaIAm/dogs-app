@@ -93,14 +93,14 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - For any (elementTop, elementBottom, windowHeight), verify update condition matches `top < windowHeight + 100 AND bottom > -100`
     - **Validates: Requirements 5.2, 5.3, 5.5**
 
-- [ ] 4. Implement section components (Part 1)
-  - [ ] 4.1 Create Navbar component
+- [x] 4. Implement section components (Part 1)
+  - [x] 4.1 Create Navbar component
     - Fixed top, z-50, mix-blend-difference, paper text
     - "RoadDoggs" logo (Fraunces) + "beta vol.3" handwritten tag (rotate on hover)
     - "[ LOG IN ]" button with hover color transition
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-  - [ ] 4.2 Create HeroSection component
+  - [x] 4.2 Create HeroSection component
     - Min-height 110vh, centered layout
     - Floating background text at 10% opacity with rotation
     - "/// coordinates_unknown" mono label
@@ -109,42 +109,42 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Parallax collage with 5 elements using Polaroid, PostItNote, NoteCard components
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
 
-  - [ ] 4.3 Create ManifestoSection component
+  - [x] 4.3 Create ManifestoSection component
     - "The Anti-Grid Manifesto." heading (italic rust "Manifesto.")
     - 2-column grid on md, single on mobile
     - Render manifestoItems from data file with numbered labels
     - _Requirements: 6.1, 6.2, 6.3_
 
-  - [ ] 4.4 Create SmartPoiSection component
+  - [x] 4.4 Create SmartPoiSection component
     - Dark ink background with sage grid overlay (10% opacity)
     - 2-column layout: text (status indicator, heading, feature descriptions) + radar visual
     - Radar: concentric circles, ping animation (3s), "Giant Artichoke" found card with connector
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 5. Checkpoint
+- [~] 5. Checkpoint
   - Ensure all components render correctly, verify parallax hook works with data-speed elements, ask the user if questions arise.
 
 - [ ] 6. Implement section components (Part 2)
-  - [ ] 6.1 Create SocialProofSection component
+  - [~] 6.1 Create SocialProofSection component
     - Header: "Word on the street" (hand) + "The Co-Pilot Reports." (serif)
     - Star rating stamp (4.9/5) with rotation that levels on hover
     - 3-column grid of ReviewCard components rendered from reviews data
     - Brand bar with 4 publication names (grayscale, 50% opacity)
     - _Requirements: 8.1, 8.2, 8.3, 8.5_
 
-  - [ ] 6.2 Create FeaturesSection component
+  - [~] 6.2 Create FeaturesSection component
     - "Tools for Drift." heading + "Curated Vibes" handwritten accent
     - 2-column grid of FeatureCard components (Route Painter + Pack Planning)
     - Include mock visuals as children content
     - _Requirements: 9.1, 9.2, 9.4_
 
-  - [ ] 6.3 Create TechCapabilitiesSection component
+  - [~] 6.3 Create TechCapabilitiesSection component
     - Dark ink background, white grid overlay (10% opacity)
     - Header: "Under the Hood" + hand-drawn arrow annotation
     - 3-column grid rendering TechFeature components from techFeatures data
     - _Requirements: 10.1, 10.2, 10.4_
 
-  - [ ] 6.4 Create CtaSection component
+  - [~] 6.4 Create CtaSection component
     - Rust background with noise overlay and decorative SVG dashed curve
     - "Limited Beta Access // Vol. 3" badge pill (rotation, hover level)
     - "Don't just drive. Roam." headline
@@ -152,50 +152,50 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Secondary text link
     - _Requirements: 11.1, 11.2, 11.3, 11.4_
 
-  - [ ] 6.5 Create FieldNotesSection component
+  - [~] 6.5 Create FieldNotesSection component
     - "Field Notes" heading with handwritten accent
     - CSS columns masonry layout (1 col mobile, 3 col desktop)
     - Render BlogCard components from blogPosts data
     - _Requirements: 12.1, 12.2_
 
-  - [ ] 6.6 Create Footer component
+  - [~] 6.6 Create Footer component
     - Dark ink background, rust top border
     - Left column: giant "GO." text, tagline, download button, handwritten note
     - Right column: nav links grid, social icons, copyright with current year
     - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
 - [ ] 7. Integrate and finalize
-  - [ ] 7.1 Create LandingPage.jsx page component
+  - [~] 7.1 Create LandingPage.jsx page component
     - Compose all sections in exact order: Navbar, Hero, Manifesto, SmartPoi, SocialProof, Features, TechCapabilities, CTA, FieldNotes, Footer
     - Apply global container styles: `text-ink antialiased overflow-x-hidden selection:bg-rust selection:text-white`
     - Render NoiseOverlay
     - Call useParallax hook
     - _Requirements: 2.1, 2.2, 14.4_
 
-  - [ ] 7.2 Update App.jsx to render LandingPage
+  - [~] 7.2 Update App.jsx to render LandingPage
     - Import and render LandingPage component
     - Ensure clean entry point with no extra wrappers
     - _Requirements: 2.1_
 
-  - [ ] 7.3 Responsive design verification and adjustments
+  - [~] 7.3 Responsive design verification and adjustments
     - Verify all grids switch from multi-column to single-column below md (768px)
     - Verify decorative elements hide/resize on mobile
     - Verify hero headline scales from 15vw to 8rem at breakpoint
     - Adjust any overflow or positioning issues
     - _Requirements: 14.1, 14.2, 14.3_
 
-- [ ] 8. Final checkpoint
+- [~] 8. Final checkpoint
   - Ensure all sections render correctly, parallax effects work smoothly, responsive layout adapts properly, and no console errors. Ask the user if questions arise.
 
 - [ ] 9. Set up Cypress testing
-  - [ ] 9.1 Install and configure Cypress
+  - [~] 9.1 Install and configure Cypress
     - Install cypress as dev dependency: `npm install -D cypress`
     - Create `cypress.config.js` with baseUrl pointing to Vite preview server (`http://localhost:4173`)
     - Create `cypress/support/e2e.js` and `cypress/support/commands.js`
     - Add npm scripts: `"cypress:open": "cypress open"`, `"cypress:run": "cypress run"`, `"test:e2e": "npm run build && npx start-server-and-test preview http://localhost:4173 cypress:run"`
     - _Requirements: 16.1_
 
-  - [ ] 9.2 Write section rendering tests
+  - [~] 9.2 Write section rendering tests
     - Create `cypress/e2e/sections.cy.js`
     - Test that all 10 sections are present in the DOM in correct order
     - Test Navbar is fixed and visible
@@ -203,7 +203,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test each section has expected key content
     - _Requirements: 16.2_
 
-  - [ ] 9.3 Write parallax and interaction tests
+  - [~] 9.3 Write parallax and interaction tests
     - Create `cypress/e2e/interactions.cy.js`
     - Test that `data-speed` elements exist
     - Test scroll triggers transform changes on parallax elements
@@ -212,7 +212,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test hover on feature cards changes shadow offset
     - _Requirements: 16.3, 16.4_
 
-  - [ ] 9.4 Write responsive layout tests
+  - [~] 9.4 Write responsive layout tests
     - Create `cypress/e2e/responsive.cy.js`
     - Test mobile viewport (375px): grids are single column
     - Test desktop viewport (1280px): grids are multi-column
@@ -220,7 +220,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test no horizontal overflow on mobile
     - _Requirements: 16.5_
 
-  - [ ] 9.5 Write smoke test
+  - [~] 9.5 Write smoke test
     - Create `cypress/e2e/smoke.cy.js`
     - Test page loads without uncaught exceptions
     - Test no console errors
@@ -229,7 +229,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - _Requirements: 16.6_
 
 - [ ] 10. Set up GitHub Actions CI pipeline
-  - [ ] 10.1 Create GitHub Actions workflow
+  - [~] 10.1 Create GitHub Actions workflow
     - Create `.github/workflows/ci.yml`
     - Trigger on push to `main` and pull requests targeting `main`
     - Node.js setup with dependency caching
