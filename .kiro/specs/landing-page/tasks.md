@@ -212,7 +212,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test each section has expected key content
     - _Requirements: 16.2_
 
-  - [ ] 9.3 Write parallax and interaction tests
+  - [x] 9.3 Write parallax and interaction tests
     - Create `cypress/e2e/landing-page/interactions.cy.js`
     - Test that `data-speed` elements exist
     - Test scroll triggers transform changes on parallax elements
