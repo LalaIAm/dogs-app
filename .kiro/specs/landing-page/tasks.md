@@ -197,23 +197,23 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
   - Ensure all sections render correctly, parallax effects work smoothly, responsive layout adapts properly, and no console errors. Ask the user if questions arise.
 
 - [ ] 9. Set up Cypress testing
-  - [~] 9.1 Install and configure Cypress
+  - [ ] 9.1 Install and configure Cypress
     - Install cypress as dev dependency: `npm install -D cypress`
     - Create `cypress.config.js` with baseUrl pointing to Vite preview server (`http://localhost:4173`)
     - Create `cypress/support/e2e.js` and `cypress/support/commands.js`
     - Add npm scripts: `"cypress:open": "cypress open"`, `"cypress:run": "cypress run"`, `"test:e2e": "npm run build && npx start-server-and-test preview http://localhost:4173 cypress:run"`
     - _Requirements: 16.1_
 
-  - [~] 9.2 Write section rendering tests
-    - Create `cypress/e2e/sections.cy.js`
+  - [ ] 9.2 Write section rendering tests
+    - Create `cypress/e2e/landing-page/sections.cy.js`
     - Test that all 10 sections are present in the DOM in correct order
     - Test Navbar is fixed and visible
     - Test Hero section headline text content
     - Test each section has expected key content
     - _Requirements: 16.2_
 
-  - [~] 9.3 Write parallax and interaction tests
-    - Create `cypress/e2e/interactions.cy.js`
+  - [ ] 9.3 Write parallax and interaction tests
+    - Create `cypress/e2e/landing-page/interactions.cy.js`
     - Test that `data-speed` elements exist
     - Test scroll triggers transform changes on parallax elements
     - Test hover on film-look images changes filter
@@ -221,16 +221,16 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test hover on feature cards changes shadow offset
     - _Requirements: 16.3, 16.4_
 
-  - [~] 9.4 Write responsive layout tests
-    - Create `cypress/e2e/responsive.cy.js`
+  - [ ] 9.4 Write responsive layout tests
+    - Create `cypress/e2e/landing-page/responsive.cy.js`
     - Test mobile viewport (375px): grids are single column
     - Test desktop viewport (1280px): grids are multi-column
     - Test hero headline size changes between viewports
     - Test no horizontal overflow on mobile
     - _Requirements: 16.5_
 
-  - [~] 9.5 Write smoke test
-    - Create `cypress/e2e/smoke.cy.js`
+  - [ ] 9.5 Write smoke test
+    - Create `cypress/e2e/landing-page/smoke.cy.js`
     - Test page loads without uncaught exceptions
     - Test no console errors
     - Test all images have valid src attributes
