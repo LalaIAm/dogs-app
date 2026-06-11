@@ -193,7 +193,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Adjust any overflow or positioning issues
     - _Requirements: 14.1, 14.2, 14.3_
 
-- [~] 8. Final checkpoint
+- [x] 8. Final checkpoint
   - Ensure all sections render correctly, parallax effects work smoothly, responsive layout adapts properly, and no console errors. Ask the user if questions arise.
 
 - [ ] 9. Set up Cypress testing
