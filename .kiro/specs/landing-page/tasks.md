@@ -221,7 +221,7 @@ Build the RoadDoggs landing page as a React.js SPA using Vite + Tailwind CSS v4.
     - Test hover on feature cards changes shadow offset
     - _Requirements: 16.3, 16.4_
 
-  - [ ] 9.4 Write responsive layout tests
+  - [x] 9.4 Write responsive layout tests
     - Create `cypress/e2e/landing-page/responsive.cy.js`
     - Test mobile viewport (375px): grids are single column
     - Test desktop viewport (1280px): grids are multi-column
